@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\DB;
+use \Illuminate\Database\Eloquent\Collection;
 
 trait HasGeographicalData
 {
@@ -65,7 +66,7 @@ trait HasGeographicalData
      * 
      * @param array $northEast Northeast coordinates ['latitude' => value, 'longitude' => value]
      * @param array $southWest Southwest coordinates ['latitude' => value, 'longitude' => value]
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public static function withinBoundingBox($northEast, $southWest)
     {
@@ -88,7 +89,7 @@ trait HasGeographicalData
      * 
      * @param float $latitude Latitude of the reference point.
      * @param float $longitude Longitude of the reference point.
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection
      */
     public static function orderByNearest($latitude, $longitude)
     {

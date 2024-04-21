@@ -41,9 +41,47 @@ class Stone extends Model
         'location'
     ];
 
+    /**
+     * Get the owning user of the stone.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all of the likes for the stone.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get all of the comments for the stone.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     *
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * get all of the founds for the stone.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+
+    public function founds()
+    {
+        return $this->hasMany(Found::class);
     }
 
     /**
