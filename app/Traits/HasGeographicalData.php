@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\DB;
-use \Illuminate\Database\Eloquent\Collection;
+use Exception;
 
 trait HasGeographicalData
 {
@@ -14,23 +14,13 @@ trait HasGeographicalData
     {
         try {
             if (isset($this->latitude, $this->longitude) && $this->latitude && $this->longitude) {
-                // Attempt to create a point and set the location
-                $this->attributes['location'] = DB::raw("ST_PointFromText('POINT(" . $this->longitude . " " . $this->latitude . ")')");
+                $this->attributes['location'] = DB::raw("ST_PointFromText('POINT(" . $this->attributes['longitude'] . " " . $this->attributes['latitude'] . ")')");
             } else {
-                // Set location to null if coordinates are invalid
-                $this->attributes['location'] = null;
-                $modelName = class_basename($this);  // Get the class name without namespace
-                throw new \Exception("Invalid latitude or longitude values for {$modelName}. Both must be set and valid.");
+                throw new Exception("Both latitude and longitude must be set and valid.");
             }
-        } catch (\Exception $e) {
-            // Log the error for further investigation
+        } catch (Exception $e) {
             report($e);
-            // Safely handle the case where the operation fails
-            $this->attributes['location'] = null; // Ensure location is null to maintain data integrity
-
-            // Re-throw the exception with a specific error message
-            $modelName = class_basename($this);  // Get the class name without namespace
-            throw new \Exception("Failed to set the geographic location on the {$modelName}: " . $e->getMessage(), 0, $e);
+            throw new Exception("Failed to set location: " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -41,23 +31,18 @@ trait HasGeographicalData
      * @param float $longitude Longitude of the other point
      * @return float Distance in meters
      */
-    public function distanceTo($latitude, $longitude)
+    public function distanceTo(float $latitude, float $longitude): float
     {
         try {
-            $distance = $this->selectRaw("ST_Distance_Sphere(location, ST_GeomFromText('POINT(? ?)')) AS distance", [
-                $longitude,
-                $latitude
-            ])->value('distance');
-
-            if ($distance === null) {
-                throw new \Exception("Location is not set or invalid in database.");
-            }
-
-            return $distance;
-        } catch (\Exception $e) {
-            $modelName = class_basename($this);
+            $query = "SELECT ST_DISTANCE_SPHERE(
+                ST_GeomFromText(CONCAT('POINT(', ?, ' ', ?, ')')),
+                ST_GeomFromText(CONCAT('POINT(', ?, ' ', ?, ')'))
+            ) AS distance";
+            $result = DB::selectOne($query, [$this->longitude, $this->latitude, $longitude, $latitude]);
+            return $result->distance ?? throw new Exception("Distance calculation failed.");
+        } catch (Exception $e) {
             report($e);
-            throw new \Exception("Failed to calculate distance for {$modelName}: " . $e->getMessage(), 0, $e);
+            throw new Exception("Failed to calculate distance: " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -66,21 +51,30 @@ trait HasGeographicalData
      * 
      * @param array $northEast Northeast coordinates ['latitude' => value, 'longitude' => value]
      * @param array $southWest Southwest coordinates ['latitude' => value, 'longitude' => value]
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function withinBoundingBox($northEast, $southWest)
+    public static function withinBoundingBox(array $northEast, array $southWest)
     {
         try {
-            return static::whereRaw("ST_Within(location, ST_MakeEnvelope(POINT(?, ?), POINT(?, ?), 4326))", [
+            $polygon = sprintf(
+                "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))", // Format as POLYGON((lng lat, lng lat, ...))
                 $southWest['longitude'],
-                $southWest['latitude'],
+                $southWest['latitude'], // Suroeste
+                $southWest['longitude'],
+                $northEast['latitude'], // Noroeste
                 $northEast['longitude'],
-                $northEast['latitude']
-            ])->get();
-        } catch (\Exception $e) {
-            $modelName = class_basename(static::class);  // Gets the class name dynamically
+                $northEast['latitude'], // Noreste
+                $northEast['longitude'],
+                $southWest['latitude'], // Sureste
+                $southWest['longitude'],
+                $southWest['latitude']  // Cerrando el polígono de nuevo en el Suroeste
+            );
+
+            $query = "ST_WITHIN(location, ST_GeomFromText(?)) = 1";
+            return static::whereRaw($query, [$polygon])->get();
+        } catch (Exception $e) {
             report($e);
-            throw new \Exception("Failed to retrieve Stones within bounding box - {$modelName}: " . $e->getMessage(), 0, $e);
+            throw new Exception("Failed to retrieve models within bounding box: " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -89,19 +83,18 @@ trait HasGeographicalData
      * 
      * @param float $latitude Latitude of the reference point.
      * @param float $longitude Longitude of the reference point.
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public static function orderByNearest($latitude, $longitude)
     {
         try {
-            return static::orderByRaw("ST_Distance_Sphere(location, ST_GeomFromText('POINT(? ?)'))", [
-                $longitude,
-                $latitude
-            ])->get();
-        } catch (\Exception $e) {
+            $point = sprintf("POINT(%f %f)", $longitude, $latitude);
+            $query = "ST_Distance_Sphere(location, ST_GeomFromText('{$point}'))";
+            return static::orderByRaw($query)->get();
+        } catch (Exception $e) {
             $modelName = class_basename(static::class);  // Gets the class name dynamically
             report($e);
-            throw new \Exception("Failed to order Stones by nearest location - {$modelName}: " . $e->getMessage(), 0, $e);
+            throw new Exception("Failed to order Stones by nearest location - {$modelName}: " . $e->getMessage(), 0, $e);
         }
     }
 }

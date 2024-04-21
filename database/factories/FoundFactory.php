@@ -2,31 +2,35 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Found;
 use App\Models\Stone;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Found>
+ * Factory for creating instances of Found model.
  */
 class FoundFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Found::class;
+
+    /**
      * Define the model's default state.
      *
-     * @return array<string, mixed> The array of default values for a new Found instance.
+     * @return array
      */
-    public function definition(): array
+    public function definition()
     {
-        $latitude = $this->faker->latitude($min = -90, $max = 90);
-        $longitude = $this->faker->longitude($min = -180, $max = 180);
-
         return [
-            'stone_id' => Stone::inRandomOrder()->firstOrFail()->id,  // Random stone ID from existing stones
-            'user_id' => User::inRandomOrder()->firstOrFail()->id,    // Random user ID from existing users
-            'latitude' => $latitude,
-            'longitude' => $longitude,                  // Random longitude for the found location
-            // 'location' are handled by model's boot method
+            'stone_id' => Stone::factory(), // Automatically handle Stone creation
+            'user_id' => User::factory(),  // Automatically handle User creation
+            'latitude' => $this->faker->latitude,
+            'longitude' => $this->faker->longitude,
         ];
     }
 }

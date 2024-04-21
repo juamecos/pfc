@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('moderation_logs', function (Blueprint $table) {
             $table->id();
             $table->morphs('moderatable');
-            $table->unsignedBigInteger('action_by');
+            $table->unsignedBigInteger('action_by')->nullable();
             $table->string('action_taken');
             $table->text('reason');
             $table->timestamps();
