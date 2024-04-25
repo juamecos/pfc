@@ -32,8 +32,7 @@ class StoneRepository extends BaseRepository
      */
     public function getStonesOrderedByProximity($latitude, $longitude, $perPage = null)
     {
-        $query = Stone::query()->orderByNearest($latitude, $longitude);
-        return is_null($perPage) ? $query->get() : $query->paginate($perPage);
+        return Stone::orderByNearest($latitude, $longitude, $perPage);
     }
 
     /**
@@ -43,11 +42,10 @@ class StoneRepository extends BaseRepository
      * @param array $northEast Coordinates (latitude, longitude) of the northeast corner of the bounding box.
      * @param array $southWest Coordinates (latitude, longitude) of the southwest corner of the bounding box.
      * @param int|null $perPage Number of items per page for pagination, or null to return all items.
-     * @return LengthAwarePaginator|Collection Returns either a paginated result or a full collection of stones.
+     * @return Collection Returns a full collection of stones.
      */
-    public function getStonesWithinBoundingBox(array $northEast, array $southWest, $perPage = null)
+    public function getStonesWithinBoundingBox(array $northEast, array $southWest)
     {
-        $query = Stone::query()->withinBoundingBox($northEast, $southWest);
-        return is_null($perPage) ? $query->get() : $query->paginate($perPage);
+        return Stone::withinBoundingBox($northEast, $southWest);
     }
 }

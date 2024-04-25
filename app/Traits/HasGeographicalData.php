@@ -70,8 +70,9 @@ trait HasGeographicalData
                 $southWest['latitude']  // Cerrando el polígono de nuevo en el Suroeste
             );
 
-            $query = "ST_WITHIN(location, ST_GeomFromText(?)) = 1";
-            return static::whereRaw($query, [$polygon])->get();
+            $query = static::whereRaw("ST_WITHIN(location, ST_GeomFromText(?)) = 1", [$polygon]);
+
+            return $query->get();
         } catch (Exception $e) {
             report($e);
             throw new Exception("Failed to retrieve models within bounding box: " . $e->getMessage(), 0, $e);
@@ -85,12 +86,14 @@ trait HasGeographicalData
      * @param float $longitude Longitude of the reference point.
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function orderByNearest($latitude, $longitude)
+    public static function orderByNearest($latitude, $longitude, $perPage = null)
     {
         try {
             $point = sprintf("POINT(%f %f)", $longitude, $latitude);
             $query = "ST_Distance_Sphere(location, ST_GeomFromText('{$point}'))";
-            return static::orderByRaw($query)->get();
+            $results = static::orderByRaw($query);
+
+            return is_null($perPage) ? $results->get() : $results->paginate($perPage);
         } catch (Exception $e) {
             $modelName = class_basename(static::class);  // Gets the class name dynamically
             report($e);

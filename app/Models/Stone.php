@@ -8,6 +8,7 @@ use App\Traits\HasGeographicalData;
 use App\Traits\HandlesModeration;
 use Illuminate\Support\Str;
 
+
 class Stone extends Model
 {
     use HasFactory, HasGeographicalData, HandlesModeration;

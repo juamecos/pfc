@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
 use \Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Class BaseRepository
@@ -34,6 +35,20 @@ class BaseRepository
     }
 
     /**
+     * Paginate the given query into a simple paginator.
+     *
+     * @param int $perPage
+     * @param array $filter
+     * @param array $columns
+     * @return LengthAwarePaginator
+     */
+    public function filteredPagination($perPage = null, array $filter = [], array $columns = ['*'])
+    {
+        return $this->model->where($filter)->paginate($perPage, $columns);
+    }
+
+
+    /**
      * @param array $data
      * @return Model
      */
@@ -50,6 +65,8 @@ class BaseRepository
     {
         return $this->model->find($id);
     }
+
+
 
     /**
      * @param Model $model
@@ -71,4 +88,6 @@ class BaseRepository
     {
         return $model->delete();
     }
+
+
 }

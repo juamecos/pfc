@@ -4,10 +4,10 @@ namespace Tests\Unit;
 
 use App\Models\Stone;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use App\Traits\HasGeographicalData;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Exception;
 
 class HasGeographicalDataTest extends TestCase
@@ -133,7 +133,23 @@ class HasGeographicalDataTest extends TestCase
         $this->assertTrue($sortedStones[2]->id == $farStone1->id || $sortedStones[2]->id == $farStone2->id, "One of the far stones should be the farthest.");
     }
 
+    #[Test]
+    public function it_orders_models_by_nearest_with_pagination()
+    {
+        Stone::factory()->count(20)->create();
+        $perPage = 5; // Items per page
+        $latitude = 10.0;
+        $longitude = 10.0;
 
+        // Execute the method with pagination
+        $paginatedResults = Stone::orderByNearest($latitude, $longitude, $perPage);
+
+        // Assertions
+        $this->assertInstanceOf(LengthAwarePaginator::class, $paginatedResults);
+        $this->assertCount($perPage, $paginatedResults);
+        $this->assertEquals(1, $paginatedResults->currentPage());
+
+    }
     #[Test]
     public function it_handles_ordering_with_no_stones_present()
     {
