@@ -46,7 +46,7 @@ class StoneService extends BaseService
      * @return LengthAwarePaginator|Collection
      * @throws Exception If there's an error in retrieving the stones.
      */
-    public function getStones($perPage = null, array $filter = [], array $columns = ['*'])
+    public function getStones($perPage = null, array $filter = [], array $columns = ['id', 'image', 'title', 'description', 'latitude', 'longitude', 'user_id', 'created_at'])
     {
         try {
             return $this->stoneRepository->filteredPagination($perPage, $filter, $columns);

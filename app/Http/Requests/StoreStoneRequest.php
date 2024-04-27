@@ -11,7 +11,7 @@ class StoreStoneRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreStoneRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'image' => 'required|image',
+            'title' => 'required|string|max:255',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ];
     }
 }

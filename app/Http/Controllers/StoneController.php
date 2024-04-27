@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Stone;
 use App\Http\Requests\StoreStoneRequest;
 use App\Http\Requests\UpdateStoneRequest;
+use App\Services\StoneService;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -15,6 +16,19 @@ use Inertia\Inertia;
  */
 class StoneController extends BaseController
 {
+    protected $stoneService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param StoneService $stoneService
+     */
+    public function __construct(StoneService $stoneService)
+    {
+        $this->stoneService = $stoneService;
+    }
+
+
     /**
      * Display a listing of stones.
      *
@@ -22,8 +36,18 @@ class StoneController extends BaseController
      */
     public function index()
     {
-        $stones = Stone::all(); // Optionally add pagination or filtering
-        return $this->render('Stones/Index', ['stones' => $stones]);
+        $perPage = 20;
+        $filter = ['active' => true];
+
+
+        $stones = $this->stoneService->getStones($perPage, $filter);
+
+        // Temporarily output data to check it
+        \Log::info('Stones data:', $stones->toArray());
+
+        return Inertia::render('Stones/Index', [
+            'stones' => $stones
+        ]);
     }
 
     /**
