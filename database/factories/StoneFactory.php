@@ -21,6 +21,8 @@ class StoneFactory extends Factory
             'description' => $this->faker->text(200),
             'latitude' => $latitude,
             'longitude' => $longitude,
+            'country' => $this->faker->country,
+            'city' => $this->faker->city,
             'active' => $this->faker->boolean(80),
             'abuse' => $this->faker->boolean(20),
             'user_id' => User::query()->inRandomOrder()->first()->id ?? User::factory()->create()->id,

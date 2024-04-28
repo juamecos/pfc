@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use \Illuminate\Database\Eloquent\Collection;
 use Exception;
 
 trait HasGeographicalData
@@ -79,34 +81,62 @@ trait HasGeographicalData
         }
     }
 
+    //TODO cHECK WHY IS GIVING ME 70 STONES
+
     /**
      * Order models by the nearest to a given point.
      * 
      * @param float $latitude Latitude of the reference point.
      * @param float $longitude Longitude of the reference point.
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return Collection | LengthAwarePaginator
      */
     public static function orderByNearest($latitude, $longitude, $perPage = 20)
     {
         try {
-            $point = sprintf("POINT(%f %f)", $longitude, $latitude);
-            $query = "ST_Distance_Sphere(location, ST_GeomFromText('{$point}'))";
-            $results = static::orderByRaw($query);
+            // Define the point using the provided latitude and longitude
+            $point = "ST_GeomFromText('POINT($longitude $latitude)')";
 
-            if (is_null($perPage)) {
-                return $results->get();
-            } else {
-                return $results->paginate($perPage)
-                    ->appends([
-                        'latitude' => $latitude,
-                        'longitude' => $longitude
-                    ]);
-            }
+            // Define the subquery for the latest founds
+            $latestFoundsSubQuery = DB::table('founds as f')
+                ->select('f.stone_id', 'f.latitude', 'f.longitude', 'f.location')
+                ->joinSub(
+                    DB::table('founds')
+                        ->select('stone_id', DB::raw('MAX(created_at) AS max_created_at'))
+                        ->groupBy('stone_id'),
+                    'latest_founds',
+                    function ($join) {
+                        $join->on('f.stone_id', '=', 'latest_founds.stone_id')
+                            ->on('f.created_at', '=', 'latest_founds.max_created_at');
+                    }
+                );
+
+            // Build the main query using Stones table
+            $results = DB::table('stones as s')
+                ->selectRaw("
+                s.id, s.image, s.title, s.description, s.user_id,
+                COALESCE(f.latitude, s.latitude) AS effective_latitude,
+                COALESCE(f.longitude, s.longitude) AS effective_longitude,
+                ST_Distance_Sphere(
+                    POINT(COALESCE(f.longitude, s.longitude), COALESCE(f.latitude, s.latitude)),
+                    {$point}
+                ) AS distance
+            ")
+                ->leftJoinSub($latestFoundsSubQuery, 'f', 's.id', '=', 'f.stone_id')
+                ->orderBy('distance');
+
+            // Return paginated results or all results
+            $results = $results->distinct('id');
+
+            return $results->paginate($perPage = 20)->appends([
+                'latitude' => $latitude,
+                'longitude' => $longitude
+            ]);
+
         } catch (Exception $e) {
-            $modelName = class_basename(static::class);  // Gets the class name dynamically
             report($e);
-            throw new Exception("Failed to order Stones by nearest location - {$modelName}: " . $e->getMessage(), 0, $e);
+            throw new Exception("Failed to order Stones by nearest location with detailed location data: " . $e->getMessage(), 0, $e);
         }
     }
+
 
 }

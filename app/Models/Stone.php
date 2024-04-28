@@ -19,6 +19,8 @@ class Stone extends Model
         'description',
         'latitude',
         'longitude',
+        'country',
+        'city',
         'active',
         'abuse',
         'code',

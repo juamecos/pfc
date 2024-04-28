@@ -10,7 +10,7 @@ class Found extends Model
 {
     use HasFactory, HasGeographicalData;
 
-    protected $fillable = ['stone_id', 'user_id', 'latitude', 'longitude', 'location'];
+    protected $fillable = ['stone_id', 'user_id', 'latitude', 'longitude', 'location', 'country', 'city'];
 
     /**
      * The attributes that are spatial fields.

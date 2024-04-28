@@ -31,6 +31,8 @@ class FoundFactory extends Factory
             'user_id' => User::factory(),  // Automatically handle User creation
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,
+            'country' => $this->faker->country,
+            'city' => $this->faker->city,
         ];
     }
 }
