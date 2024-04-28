@@ -7,7 +7,9 @@ use App\Http\Requests\StoreStoneRequest;
 use App\Http\Requests\UpdateStoneRequest;
 use App\Services\StoneService;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Exception;
 
 /**
  * Class StoneController
@@ -34,20 +36,62 @@ class StoneController extends BaseController
      *
      * @return \Inertia\Response
      */
-    public function index()
+    /**
+     * Display a listing of stones.
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
+    public function index(Request $request)
     {
         $perPage = 20;
-        $filter = ['active' => true];
+
+        // Inicializa $stones como una colección vacía o un valor predeterminado
+        $stones = collect([]);
+
+        if ($request->has(['latitude', 'longitude'])) {
+            // Asegúrate de convertir los valores de entrada a tipo float
+            $latitude = $request->latitude;
+            $longitude = $request->longitude;
 
 
-        $stones = $this->stoneService->getStones($perPage, $filter);
 
-        // Temporarily output data to check it
-        \Log::info('Stones data:', $stones->toArray());
+            try {
+                $stones = $this->stoneService->findStonesNearLocation($latitude, $longitude, $perPage);
 
+            } catch (Exception $e) {
+                return Inertia::render('Error', ['message' => $e->getMessage()]);
+            }
+        } else {
+            $filter = ['active' => true];
+            $stones = $this->stoneService->getStones($perPage, $filter);
+        }
+        // print_r($stones);
         return Inertia::render('Stones/Index', [
             'stones' => $stones
         ]);
+    }
+
+
+
+    /**
+     * Find stones near a specified location.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Inertia\Response
+     */
+    public function findNear(StoreStoneRequest $request)
+    {
+        $latitude = $request->query('latitude');
+        $longitude = $request->query('longitude');
+        $perPage = $request->query('perPage', null); // Default to null if not provided
+
+        try {
+            $stones = $this->stoneService->findStonesNearLocation($latitude, $longitude, $perPage);
+            return Inertia::render('Stones/Near', ['stones' => $stones]);
+        } catch (Exception $e) {
+            return Inertia::render('Error', ['message' => $e->getMessage()]);
+        }
     }
 
     /**

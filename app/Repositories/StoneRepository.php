@@ -30,7 +30,7 @@ class StoneRepository extends BaseRepository
      * @param int|null $perPage Number of items per page for pagination, or null to return all items.
      * @return LengthAwarePaginator|Collection Returns either a paginated result or a full collection of stones.
      */
-    public function getStonesOrderedByProximity($latitude, $longitude, $perPage = null)
+    public function getStonesOrderedByProximity($latitude, $longitude, $perPage = 20)
     {
         return Stone::orderByNearest($latitude, $longitude, $perPage);
     }

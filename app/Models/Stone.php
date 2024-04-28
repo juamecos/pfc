@@ -42,6 +42,8 @@ class Stone extends Model
         'location'
     ];
 
+    protected $hidden = ['location'];
+
     /**
      * Get the owning user of the stone.
      *

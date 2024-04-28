@@ -1,61 +1,59 @@
-import {useState, useEffect} from 'react'
+import { useState, useCallback } from 'react';
 
 export default function useGeolocation() {
-    const [locationData, setLocationData] = useState(null);
+    const [locationData, setLocationData] = useState(() => {
+        const savedData = localStorage.getItem('geolocationData');
+        return savedData ? JSON.parse(savedData) : null;
+    });
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const savedData = localStorage.getItem('geolocationData');
+    const fetchLocationData = useCallback(() => {
+        if (!navigator.geolocation) {
+            const errorMessage = 'Geolocation is not supported by this browser.';
+            setError(errorMessage);
+            localStorage.setItem('geolocationError', errorMessage);
+            return;
+        }
 
-        const getGeoLocationDetails = async () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const apiKey = import.meta.env.VITE_REACT_APP_BIG_DATA_CLOUD_API_KEY; // Modificado aquí
-                    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en&key=${apiKey}`;
-                    
-                    try {
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        
-                        const newLocationDetails = {
-                            latitude,
-                            longitude,
-                            country: data.countryName,
-                            city: data.city
-                        };
-                        
-                        // Compare with existing data
-                        if (savedData) {
-                            const existingData = JSON.parse(savedData);
-                            if (existingData.country === newLocationDetails.country && existingData.city === newLocationDetails.city) {
-                                // If country and city are the same, do not update
-                                return;
-                            }
-                        }
-                        
-                        // Update local state and localStorage if different
-                        setLocationData(newLocationDetails);
-                        localStorage.setItem('geolocationData', JSON.stringify(newLocationDetails));
-                    } catch (fetchError) {
-                        const errorMessage = 'Error obtaining location: ' + fetchError.message;
-                        setError(errorMessage);
-                        localStorage.setItem('geolocationError', errorMessage);
-                    }
-                }, (geoError) => {
-                    const errorMessage = 'Error obtaining location: ' + geoError.message;
-                    setError(errorMessage);
-                    localStorage.setItem('geolocationError', errorMessage);
-                });
-            } else {
-                const errorMessage = 'Geolocation is not supported by this browser.';
-                setError(errorMessage);
-                localStorage.setItem('geolocationError', errorMessage);
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+
+            // Check local storage for existing data
+            const savedData = localStorage.getItem('geolocationData');
+            const existingData = savedData ? JSON.parse(savedData) : null;
+            if (existingData && existingData.latitude === latitude && existingData.longitude === longitude) {
+                setLocationData(existingData);
+                console.log('useGeolocation: we have the data saved');
+                return; // No need to fetch new data
             }
-        };
 
-        getGeoLocationDetails();
+            const apiKey = import.meta.env.VITE_REACT_APP_BIG_DATA_CLOUD_API_KEY; // Your API key here
+            const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en&key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const newLocationDetails = {
+                    latitude,
+                    longitude,
+                    country: data.countryName,
+                    city: data.locality
+                };
+
+                setLocationData(newLocationDetails);
+                localStorage.setItem('geolocationData', JSON.stringify(newLocationDetails));
+            } catch (fetchError) {
+                setError('Error obtaining location: ' + fetchError.message);
+                localStorage.setItem('geolocationError', fetchError.message);
+            }
+        }, (geoError) => {
+            setError('Location permission denied. Please enable location services to use this feature.');
+            localStorage.setItem('geolocationError', geoError.message);
+        });
     }, []);
 
-    return { locationData, error };
-}
+    // Return the hook data
+    return { locationData, error, fetchLocationData };
+};
+

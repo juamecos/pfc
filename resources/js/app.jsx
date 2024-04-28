@@ -4,6 +4,7 @@ import '../css/app.css';
 import { hydrateRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import RootErrorBoundary from './ErrorBoundaries/RootErrorBoundary';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Lapisgame';
@@ -14,7 +15,11 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = hydrateRoot(el);
 
-        root.render(<App {...props} />);
+        root.render(
+            <RootErrorBoundary>
+                <App {...props} />
+            </RootErrorBoundary>
+        );
     },
     progress: {
         color: '#4B5563',

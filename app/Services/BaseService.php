@@ -6,19 +6,21 @@ use Exception;
 use Illuminate\Database\Eloquent\Model;
 use App\Repositories\BaseRepository;
 
+/**
+ * Abstract base service that provides common functionality to all service classes.
+ * This includes basic CRUD operations and exception handling.
+ */
 abstract class BaseService
 {
     /**
-     * The repository associated with the service.
-     *
-     * @var BaseRepository
+     * @var BaseRepository The repository associated with the service.
      */
     protected $repository;
 
     /**
-     * BaseService constructor.
-     *
-     * @param BaseRepository $repository
+     * Create a new service instance.
+     * 
+     * @param BaseRepository $repository The repository used by the service.
      */
     public function __construct(BaseRepository $repository)
     {
@@ -26,74 +28,75 @@ abstract class BaseService
     }
 
     /**
-     * Get all records.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection|Model[]
+     * Retrieve all models from the repository.
+     * 
+     * @return mixed The result of the repository all method.
      */
     public function getAll()
     {
-        return $this->repository->all();
+        return $this->handleOperations(fn() => $this->repository->all(), __METHOD__);
     }
 
     /**
-     * Save a new record.
-     *
-     * @param array $data
-     * @return Model
-     */
-    public function save($data)
-    {
-        return $this->repository->create($data);
-    }
-
-    /**
-     * Find a record by ID.
-     *
-     * @param mixed $id
-     * @return Model|null
+     * Retrieve a model by its ID.
+     * 
+     * @param mixed $id The model ID to find.
+     * @return mixed The result of the repository find method.
      */
     public function getById($id)
     {
-        return $this->repository->find($id);
+        return $this->handleOperations(fn() => $this->repository->find($id), __METHOD__);
     }
 
     /**
-     * Update a record.
-     *
-     * @param Model $model
-     * @param array $data
-     * @return Model
+     * Save a new model via the repository.
+     * 
+     * @param array $data Data used to create the model.
+     * @return mixed The result of the repository create method.
+     */
+    public function save(array $data)
+    {
+        return $this->handleOperations(fn() => $this->repository->create($data), __METHOD__);
+    }
+
+    /**
+     * Update an existing model.
+     * 
+     * @param Model $model The model to update.
+     * @param array $data The data for updating the model.
+     * @return mixed The result of the repository update method.
      */
     public function update(Model $model, array $data)
     {
-        return $this->repository->update($model, $data);
+        return $this->handleOperations(fn() => $this->repository->update($model, $data), __METHOD__);
     }
 
     /**
-     * Delete a record.
-     *
-     * @param Model $model
-     * @return bool|null
+     * Delete a model via the repository.
+     * 
+     * @param Model $model The model to delete.
+     * @return mixed The result of the repository delete method.
      */
     public function delete(Model $model)
     {
-        return $this->repository->delete($model);
+        return $this->handleOperations(fn() => $this->repository->delete($model), __METHOD__);
     }
 
     /**
-     * Handle operations and manage exceptions.
-     *
-     * @param callable $operation
-     * @return mixed
-     * @throws Exception
+     * Handle operations and manage exceptions with detailed error messages.
+     * 
+     * @param callable $operation The repository operation to perform.
+     * @param string $methodName The name of the method where the operation is called.
+     * @return mixed The result of the operation.
+     * @throws Exception If an exception occurs during the operation.
      */
-    protected function handleOperations(callable $operation)
+    protected function handleOperations(callable $operation, string $methodName)
     {
         try {
             return $operation();
         } catch (Exception $e) {
-            // Here you can log the exception or handle it as per your application's needs
-            throw new Exception('An error occurred while executing the operation: ' . $e->getMessage(), 0, $e);
+            $errorMsg = sprintf("Error in %s: %s", $methodName, $e->getMessage());
+            throw new Exception($errorMsg, 0, $e);
         }
     }
 }

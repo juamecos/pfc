@@ -86,18 +86,27 @@ trait HasGeographicalData
      * @param float $longitude Longitude of the reference point.
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public static function orderByNearest($latitude, $longitude, $perPage = null)
+    public static function orderByNearest($latitude, $longitude, $perPage = 20)
     {
         try {
             $point = sprintf("POINT(%f %f)", $longitude, $latitude);
             $query = "ST_Distance_Sphere(location, ST_GeomFromText('{$point}'))";
             $results = static::orderByRaw($query);
 
-            return is_null($perPage) ? $results->get() : $results->paginate($perPage);
+            if (is_null($perPage)) {
+                return $results->get();
+            } else {
+                return $results->paginate($perPage)
+                    ->appends([
+                        'latitude' => $latitude,
+                        'longitude' => $longitude
+                    ]);
+            }
         } catch (Exception $e) {
             $modelName = class_basename(static::class);  // Gets the class name dynamically
             report($e);
             throw new Exception("Failed to order Stones by nearest location - {$modelName}: " . $e->getMessage(), 0, $e);
         }
     }
+
 }

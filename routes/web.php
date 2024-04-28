@@ -19,7 +19,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/', [StoneController::class, 'index']);
+Route::get('/', [StoneController::class, 'index'])->name('stones.index');
 
 // Route::get('/stone/{stone}', function () {
 //     return Inertia::render('Stone');

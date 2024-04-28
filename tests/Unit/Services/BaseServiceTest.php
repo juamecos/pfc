@@ -30,7 +30,7 @@ class BaseServiceTest extends TestCase
     #[Test]
     public function it_can_get_all_models()
     {
-        $models = new Collection([new User, new User, new User]); // Cambiado de collect() a new Collection()
+        $models = new Collection([new User, new User, new User]);
 
         $this->mockRepository->expects($this->once())
             ->method('all')
@@ -89,29 +89,31 @@ class BaseServiceTest extends TestCase
     public function it_can_handle_operations()
     {
         $operation = function () {
-            return 'result';
+            return 'operation result';
         };
+        $methodName = 'BaseService::dummyMethod';
 
         $method = new \ReflectionMethod($this->baseService, 'handleOperations');
-        $method->setAccessible(true);
-        $result = $method->invoke($this->baseService, $operation);
+        $method->setAccessible(true); // Make the method accessible
 
-        $this->assertEquals('result', $result);
+        $result = $method->invoke($this->baseService, $operation, $methodName);
+        $this->assertEquals('operation result', $result);
     }
 
     #[Test]
-    public function it_can_handle_operations_with_exception()
+    public function it_handles_exceptions_in_operations()
     {
         $operation = function () {
-            throw new Exception('Error');
+            throw new Exception('Test exception');
         };
+        $methodName = 'BaseService::testMethod';
 
         $method = new \ReflectionMethod($this->baseService, 'handleOperations');
-        $method->setAccessible(true);
+        $method->setAccessible(true); // Make the method accessible
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('An error occurred while executing the operation: Error');
+        $this->expectExceptionMessage("Error in BaseService::testMethod: Test exception");
 
-        $method->invoke($this->baseService, $operation);
+        $method->invoke($this->baseService, $operation, $methodName);
     }
 }
