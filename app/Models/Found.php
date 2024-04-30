@@ -21,6 +21,8 @@ class Found extends Model
         'location'
     ];
 
+    protected $hidden = ['location'];
+
 
 
     public function stone()

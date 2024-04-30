@@ -81,8 +81,6 @@ trait HasGeographicalData
         }
     }
 
-    //TODO cHECK WHY IS GIVING ME 70 STONES
-
     /**
      * Order models by the nearest to a given point.
      * 

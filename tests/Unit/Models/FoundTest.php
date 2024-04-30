@@ -27,6 +27,8 @@ class FoundTest extends TestCase
             'user_id' => $user->id,
             'latitude' => 34.0522,
             'longitude' => -118.2437,
+            'country' => 'ES',
+            'city' => 'Barcelona',
         ]);
 
         // Test Relationships
@@ -34,6 +36,9 @@ class FoundTest extends TestCase
         $this->assertEquals($stone->id, $found->stone->id);
         $this->assertInstanceOf(User::class, $found->user);
         $this->assertEquals($user->id, $found->user->id);
+        $this->assertEquals(34.0522, $found->latitude);
+        $this->assertEquals(-118.2437, $found->longitude);
+        $this->assertEquals('ES', $found->country);
 
         // Test setting location on saving
         $this->assertNotNull($found->location);

@@ -3,6 +3,7 @@
 namespace Tests\Unit\Repositories;
 
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Stone;
 use App\Repositories\StoneRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -39,18 +40,60 @@ class StoneRepositoryTest extends TestCase
     #[Test]
     public function it_retrieves_stones_ordered_by_proximity_with_pagination()
     {
-        // Arrange: Ensure there are enough records to paginate
-        Stone::factory()->count(30)->create([
-            'latitude' => 10.5,
-            'longitude' => 10.5
-        ]);
+        $user = User::first(); // Ensure there's a user in your database.
 
-        // Act: Retrieve paginated results
-        $result = $this->stoneRepository->getStonesOrderedByProximity(10.0, 10.0, 10);
+        if (!$user) {
+            // Optionally create a user if none exists.
+            $user = User::create([
+                'name' => 'John Doe',
+                'email' => 'john@example.com',
+                'password' => bcrypt('password'), // Use a hashed password
+            ]);
+        }
 
-        // Assert: Check for pagination
-        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
-        $this->assertEquals(10, $result->count());
+        $latitude = 10.0;
+        $longitude = 10.0;
+
+        // Create 25 stones with increasing distance
+        for ($i = 1; $i <= 25; $i++) {
+            Stone::create([
+                'image' => 'path/to/image.jpg',
+                'title' => "Stone $i",
+                'description' => "Description of Stone $i",
+                'latitude' => $latitude + ($i * 0.01),
+                'longitude' => $longitude + ($i * 0.01),
+                'country' => 'Country',
+                'city' => 'City',
+                'active' => true,
+                'abuse' => false,
+                'user_id' => $user->id,
+                'moderation_status' => 'pending',
+                'report_count' => 0
+            ]);
+        }
+
+        $perPage = 20; // Items per page
+
+        $results = Stone::orderByNearest($latitude, $longitude, $perPage);
+
+        $this->assertInstanceOf(LengthAwarePaginator::class, $results, "The result should be an instance of LengthAwarePaginator.");
+        $this->assertEquals(20, $results->count(), "Should only contain 20 items on the first page.");
+
+        // Check if each subsequent stone is farther than the previous
+        $stones = $results->items();
+        $previousDistance = 0.0;
+        foreach ($stones as $index => $stone) {
+            $currentDistance = $stone->distance;
+            if ($index > 0) { // Skip the first stone as there is no previous stone to compare
+                $this->assertGreaterThan($previousDistance, $currentDistance, "Stone at index $index should be farther than the previous stone.");
+            }
+            $previousDistance = $currentDistance;
+        }
+
+        // // Ensure pagination is working
+        $this->assertCount(20, $results->items(), "Should only contain 20 items on the first page.");
+        $this->assertEquals(1, $results->currentPage(), "The current page should be 1.");
+        $this->assertEquals(25, $results->total(), "Total stones should be 25.");
     }
 
     #[Test]
