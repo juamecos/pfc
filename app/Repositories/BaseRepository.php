@@ -66,8 +66,6 @@ class BaseRepository
         return $this->model->find($id);
     }
 
-
-
     /**
      * @param Model $model
      * @param array $data
@@ -89,5 +87,22 @@ class BaseRepository
         return $model->delete();
     }
 
+    /**
+     * Get count of models based on optional filters.
+     * 
+     * @param array $filters Optional filters in the form of ['column' => 'value', ...]
+     * @return int Count of models after applying filters.
+     */
+    public function count(array $filters = []): int
+    {
+        // Apply filters to the query if any
+        $query = $this->model->newQuery();
 
+        foreach ($filters as $column => $value) {
+            // Here we handle basic 'where' filters; this can be extended to more complex scenarios
+            $query->where($column, $value);
+        }
+
+        return $query->count();
+    }
 }

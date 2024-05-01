@@ -117,7 +117,7 @@ class BaseRepositoryTest extends TestCase
         $this->assertNull($firstUser->created_at);  // Assuming 'created_at' is not in the selected columns
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_results()
     {
         $results = $this->repository->filteredPagination(10);
