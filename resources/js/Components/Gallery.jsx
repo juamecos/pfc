@@ -41,7 +41,7 @@ export default function Gallery({ stones }) {
         <div className="">
             {error && <p>Error: {error}</p>} {/* Mostrar error si existe */}
             <TagFilters tags={tags} onSelectTag={handleTagSelect} />
-            <Grid images={images} />
+            <Grid stones={stones} />
             <div className="flex justify-center mt-8 mb-4">
                 <Pagination
                     currentPage={stones.current_page}
