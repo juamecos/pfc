@@ -45,11 +45,18 @@ class BaseServiceTest extends TestCase
     #[Test]
     public function it_creates_a_new_model()
     {
+        $this->actingAs(User::factory()->create()); // Simulate a logged-in user
         $data = ['key' => 'value'];
         $model = new class extends Model {};
-        $this->mockRepository->expects($this->once())->method('create')->with($data)->willReturn($model);
+
+        // Mock the repository's create method to expect the given data and return the model instance.
+        $this->mockRepository->expects($this->once())
+            ->method('create')
+            ->with($data)
+            ->willReturn($model);
 
         $result = $this->baseService->save($data);
+
         $this->assertInstanceOf(Model::class, $result);
     }
 
