@@ -60,20 +60,21 @@ trait HasGeographicalData
     {
         try {
             $polygon = sprintf(
-                "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))", // Format as POLYGON((lng lat, lng lat, ...))
+                "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
                 $southWest['longitude'],
-                $southWest['latitude'], // Suroeste
+                $southWest['latitude'], // Southwest
                 $southWest['longitude'],
-                $northEast['latitude'], // Noroeste
+                $northEast['latitude'], // Northwest
                 $northEast['longitude'],
-                $northEast['latitude'], // Noreste
+                $northEast['latitude'], // Northeast
                 $northEast['longitude'],
-                $southWest['latitude'], // Sureste
+                $southWest['latitude'], // Southeast
                 $southWest['longitude'],
-                $southWest['latitude']  // Cerrando el polígono de nuevo en el Suroeste
+                $southWest['latitude']  // Closing back at Southwest
             );
 
-            $query = static::whereRaw("ST_WITHIN(location, ST_GeomFromText(?)) = 1", [$polygon]);
+            $query = Stone::whereRaw("ST_WITHIN(location, ST_GeomFromText(?)) = 1", [$polygon])
+                ->with(['user', 'likes', 'founds', 'comments']);
 
             return $query->get();
         } catch (Exception $e) {

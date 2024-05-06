@@ -108,6 +108,20 @@ class StoneController extends BaseController
         }
     }
 
+    public function discover(Request $request)
+    {
+        $northEast = $request->input('northEast', ['latitude' => 40.9153, 'longitude' => -73.7004]);
+        $southWest = $request->input('southWest', ['latitude' => 40.4960, 'longitude' => -74.2557]);
+
+        $stones = $this->stoneService->findStonesInArea($northEast, $southWest, 20);
+
+        return Inertia::render('Discover', [
+            'stones' => $stones,
+            'northEast' => $northEast,
+            'southWest' => $southWest
+        ]);
+    }
+
     /**
      * Show the form for creating a new stone.
      *

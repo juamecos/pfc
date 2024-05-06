@@ -31,16 +31,16 @@ export default function Navbar() {
                             <a href="#" className={getLinkClass('Home')} onClick={() => handleSetActiveLink('Home')}>Home</a>
                         </li>
                         <li>
-                            <a href="#" className={getLinkClass('Services')} onClick={() => handleSetActiveLink('Services')}>Discover</a>
+                            <a href="#" className={getLinkClass('Discover')} onClick={() => handleSetActiveLink('Discover')}>Discover</a>
                         </li>
                         <li>
-                            <a href="#" className={getLinkClass('Pricing')} onClick={() => handleSetActiveLink('Pricing')}>Add</a>
+                            <a href="#" className={getLinkClass('Add')} onClick={() => handleSetActiveLink('Add')}>Add</a>
                         </li>
                         <li>
-                            <a href="#" className={getLinkClass('Contact')} onClick={() => handleSetActiveLink('Contact')}>Settings</a>
+                            <a href="#" className={getLinkClass('Settings')} onClick={() => handleSetActiveLink('Settings')}>Settings</a>
                         </li>
                         <li>
-                            <a href="#" className={getLinkClass('Contact')} onClick={() => handleSetActiveLink('Contact')}>Profile</a>
+                            <a href="#" className={getLinkClass('Profile')} onClick={() => handleSetActiveLink('Contact')}>Profile</a>
                         </li>
                     </ul>
                 </div>

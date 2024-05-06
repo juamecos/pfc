@@ -21,6 +21,8 @@
     },
     "dependencies": {
         "@ionic/react": "^8.0.1",
-        "ionicons": "^7.3.1"
+        "ionicons": "^7.3.1",
+        "leaflet": "^1.9.4",
+        "react-leaflet": "^4.2.1"
     }
 }

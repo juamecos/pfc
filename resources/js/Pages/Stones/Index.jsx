@@ -2,12 +2,11 @@ import { Head } from "@inertiajs/react";
 import GuestLayout from "@/Layouts/GuestLayout";
 import Gallery from "@/Components/Gallery";
 import CustomText from "@/Components/CustomText";
-import useGeolocation from "@/hooks/useGeolocation";
 import Button from "@/Components/Button";
 
 
 export default function Stones(props) {
-    // const { locationData, error } = useGeolocation();
+
     const { stones } = props;
     const backgroundImageUrl = 'images/background-index.png';
 
