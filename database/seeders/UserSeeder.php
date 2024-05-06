@@ -50,6 +50,21 @@ class UserSeeder extends Seeder
             'remember_token' => Str::random(10)
         ]);
 
+        // Create a moderator user if not exists
+        User::firstOrCreate([
+            'email' => 'normaluser@example.com'
+        ], [
+            'name' => 'normaluser',
+            'email_verified_at' => now(),
+            'password' => Hash::make('normaluser123'),
+            'role' => 'user',
+            'avatar' => 'https://via.placeholder.com/100x100.png/00FF00?text=normaluser',
+            'bio' => 'Normal user account without privileges.',
+            'country' => 'US', // Suponiendo Estados Unidos como ejemplo
+            'active' => true,
+            'remember_token' => Str::random(10)
+        ]);
+
         // Create 10 regular users
         User::factory()->count(10)->create();
     }

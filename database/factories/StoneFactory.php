@@ -21,7 +21,7 @@ class StoneFactory extends Factory
             'description' => $this->faker->text(200),
             'latitude' => $latitude,
             'longitude' => $longitude,
-            'country' => $this->faker->country,
+            'country' => $this->faker->countryCode,
             'city' => $this->faker->city,
             'active' => $this->faker->boolean(80),
             'abuse' => $this->faker->boolean(20),

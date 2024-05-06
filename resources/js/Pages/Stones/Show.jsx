@@ -1,12 +1,13 @@
 
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Head } from "@inertiajs/react";
-import BackButton from "./../../Components/BackButton"
-import Icon from './../../Components/Icon';
+import BackButton from "@/Components//BackButton"
+import Icon from '@/Components//Icon';
 import { ellipsisVertical } from 'ionicons/icons';
-import Card from "@/Components/Card/Card";
+import StoneDetails from "@/Components/Stone/StoneDetails";
 export default function Show({ stone }) {
-    console.log(stone);
+
+
     return (
         <GuestLayout>
             <Head title="Lagisgame" />
@@ -14,7 +15,9 @@ export default function Show({ stone }) {
                 <BackButton />
                 <Icon iconName={ellipsisVertical} />
             </div>
-            <Card stone={stone} />
+            <StoneDetails stone={stone} />
+
+
 
 
         </GuestLayout>

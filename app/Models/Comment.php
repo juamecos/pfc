@@ -21,6 +21,8 @@ class Comment extends Model
         'report_count'
     ];
 
+    // protected $with = ['user', 'stone'];
+
     /**
      * Get the user that owns the comment.
      *
@@ -28,7 +30,7 @@ class Comment extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -38,7 +40,7 @@ class Comment extends Model
      */
     public function stone()
     {
-        return $this->belongsTo(Stone::class);
+        return $this->belongsTo(Stone::class, 'stone_id');
     }
 
     /**

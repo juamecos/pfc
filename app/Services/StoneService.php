@@ -56,6 +56,8 @@ class StoneService extends BaseService
         }
     }
 
+
+
     /**
      * Find a stone by ID.
      *
@@ -70,11 +72,52 @@ class StoneService extends BaseService
             if (!$stone) {
                 throw new Exception("Stone with ID {$stoneId} not found.");
             }
-            return $stone;
+            // Convert the model to an array (or fetch as array from the start if possible)
+            $stoneData = $stone->toArray();
+
+            // Filter data based on user role
+            if (!Auth::check() || !Auth::user()->hasRole(['admin', 'moderator'])) {
+                unset($stoneData['email']);
+                unset($stoneData['role']);
+            }
+
+            return $stoneData;
         } catch (Exception $e) {
             throw new Exception("Failed to find stone with ID {$stoneId}: " . $e->getMessage());
         }
     }
+
+    /**
+     * Retrieve stones ordered by the most commented.
+     *
+     * @param int|null $perPage
+     * @return LengthAwarePaginator
+     * @throws Exception If there's an error in retrieving the stones.
+     */
+    public function getStonesOrderedByMostCommented($perPage = 20): LengthAwarePaginator
+    {
+        try {
+            return $this->stoneRepository->getStonesOrderedByMostCommented($perPage);
+        } catch (Exception $e) {
+            throw new Exception("Error retrieving stones ordered by most commented: " . $e->getMessage());
+        }
+    }
+
+    public function getStonesOrderedByMostLiked($perPage = 20)
+    {
+        return $this->stoneRepository->getStonesOrderedByMostLiked($perPage);
+    }
+
+    public function getStonesFilteredByCountry(string $country, $perPage = 20)
+    {
+        return $this->stoneRepository->getStonesFilteredByCountry($country, $perPage);
+    }
+
+    public function getStonesOrderedByMostRecent()
+    {
+        return $this->stoneRepository->getStonesOrderedByMostRecent();
+    }
+
 
     /**
      * Creates a new stone with the required and additional data, ensuring the user is valid.

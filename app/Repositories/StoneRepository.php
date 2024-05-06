@@ -22,6 +22,52 @@ class StoneRepository extends BaseRepository
     }
 
     /**
+     * Retrieve stones ordered by most commented.
+     *
+     * @param int|null $perPage
+     * @return LengthAwarePaginator
+     */
+    public function getStonesOrderedByMostCommented($perPage = 20): LengthAwarePaginator
+    {
+        return Stone::withCount('comments')
+            ->orderBy('comments_count', 'desc')
+            ->paginate($perPage)
+            ->appends(['filter' => 'Most commented']);
+    }
+
+    public function getStonesOrderedByMostLiked($perPage = 20)
+    {
+        return Stone::withCount('likes')
+            ->orderByDesc('likes_count')
+            ->paginate($perPage)
+            ->appends(['filter' => 'Most liked']);
+        ;
+
+    }
+
+    public function getStonesFilteredByCountry(string $country, $perPage = 20)
+    {
+        // Limpiar la query para eliminar espacios en blanco
+        $cleanCountry = trim($country);
+
+        // Verificar que se está filtrando correctamente
+        return Stone::where('country', $cleanCountry)
+            ->orderBy('country')
+            ->paginate($perPage)
+            ->appends(['forCountry' => $cleanCountry]);
+    }
+
+
+    public function getStonesOrderedByMostRecent($perPage = 20)
+    {
+        return Stone::orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->appends(['filter' => 'Newest']);
+    }
+
+
+
+    /**
      * Retrieves stones ordered by proximity to a specified geographic point.
      * This method can return either a paginated result or a complete list.
      *

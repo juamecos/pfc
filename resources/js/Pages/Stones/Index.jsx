@@ -9,7 +9,6 @@ import Button from "@/Components/Button";
 export default function Stones(props) {
     // const { locationData, error } = useGeolocation();
     const { stones } = props;
-    console.log(props.stones);
     const backgroundImageUrl = 'images/background-index.png';
 
 

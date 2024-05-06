@@ -5,6 +5,7 @@ namespace App\Traits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use \Illuminate\Database\Eloquent\Collection;
+use App\Models\Stone;
 use Exception;
 
 trait HasGeographicalData
@@ -82,16 +83,16 @@ trait HasGeographicalData
     }
 
     /**
-     * Order models by the nearest to a given point.
-     * 
+     * Order models by the nearest to a given point, including user, likes, founds, and comments.
+     *
      * @param float $latitude Latitude of the reference point.
      * @param float $longitude Longitude of the reference point.
-     * @return Collection | LengthAwarePaginator
+     * @param int $perPage Items per page for pagination.
+     * @return Collection|LengthAwarePaginator
      */
     public static function orderByNearest($latitude, $longitude, $perPage = 20)
     {
         try {
-            // Define the point using the provided latitude and longitude
             $point = "ST_GeomFromText('POINT($longitude $latitude)')";
 
             // Define the subquery for the latest founds
@@ -123,9 +124,11 @@ trait HasGeographicalData
                 ->orderBy('distance');
 
             // Return paginated results or all results
-            $results = $results->distinct('id');
+            $resultsQuery = Stone::query()
+                ->whereIn('id', $results->pluck('id')->all())
+                ->with(['user', 'likes', 'founds', 'comments']);
 
-            return $results->paginate($perPage = 20)->appends([
+            return $resultsQuery->paginate($perPage)->appends([
                 'latitude' => $latitude,
                 'longitude' => $longitude
             ]);

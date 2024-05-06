@@ -27,12 +27,12 @@ class Found extends Model
 
     public function stone()
     {
-        return $this->belongsTo(Stone::class);
+        return $this->belongsTo(Stone::class, 'stone_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**

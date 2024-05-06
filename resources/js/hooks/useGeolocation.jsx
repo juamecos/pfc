@@ -18,15 +18,6 @@ export default function useGeolocation() {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
 
-            // Check local storage for existing data
-            const savedData = localStorage.getItem('geolocationData');
-            const existingData = savedData ? JSON.parse(savedData) : null;
-            if (existingData && existingData.latitude === latitude && existingData.longitude === longitude) {
-                setLocationData(existingData);
-                console.log('useGeolocation: we have the data saved');
-                return; // No need to fetch new data
-            }
-
             const apiKey = import.meta.env.VITE_REACT_APP_BIG_DATA_CLOUD_API_KEY; // Your API key here
             const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en&key=${apiKey}`;
 
@@ -37,7 +28,7 @@ export default function useGeolocation() {
                 const newLocationDetails = {
                     latitude,
                     longitude,
-                    country: data.countryName,
+                    countryCode: data.countryCode,
                     city: data.locality
                 };
 

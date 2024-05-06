@@ -47,6 +47,13 @@ class Stone extends Model
     protected $hidden = ['location'];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array
+     */
+    protected $with = ['user', 'likes', 'comments', 'founds'];
+
+    /**
      * Get the owning user of the stone.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

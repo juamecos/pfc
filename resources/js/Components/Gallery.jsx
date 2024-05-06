@@ -1,39 +1,72 @@
 import React, { useState } from 'react';
 import { router } from '@inertiajs/react'
 import useGeolocation from '@/hooks/useGeolocation'; // Asumiendo que el hook está en este path
-import TagFilters from './TagFilters';
-import Grid from './Grid';
-import Pagination from './Pagination';
-import Footer from './Footer';
+import TagFilters from '@/Components/TagFilters';
+import Grid from '@/Components/Grid';
+import Pagination from '@/Components/Pagination';
+import Footer from '@/Components/Footer';
 
 export default function Gallery({ stones }) {
-    const tags = ['New', 'Nearest', 'Most commented', 'Most liked', 'Country'];
+    const tags = ['Newest', 'Nearest', 'Most commented', 'Most liked', 'Country'];
     const { locationData, error, fetchLocationData } = useGeolocation();
 
-    const images = stones.data.filter(stone => stone.image);
-    const [selectedTag, setSelectedTag] = useState('New');
+    const [selectedTag, setSelectedTag] = useState('');
+    console.log(selectedTag, stones);
 
-    const handleTagSelect = (tag) => {
+    const handleTagSelect = async (tag) => {
         setSelectedTag(tag);
-        if (selectedTag === 'Nearest') {
-            fetchLocationData();
-            const { latitude, longitude } = locationData;
-            console.log('From handleTagSelect');
-            console.log('Selected tag: ' + tag);
-            console.log(error);
-            console.log(locationData);
+        console.log('handleTagSelect', tag);
 
-            const safeLatitude = encodeURIComponent(latitude);
-            const safeLongitude = encodeURIComponent(longitude);
-
-            console.log('From handleTagSelect ' + safeLatitude + ' ' + safeLongitude);
+        if (tag === 'Newest') {
+            router.visit('/', {
+                method: 'get',
+                data: {
+                    filter: 'Newest',
+                },
+                preserveState: true,
+            });
+        } else if (tag === 'Nearest') {
+            await fetchLocationData(); // Await the location data
+            const safeLatitude = encodeURIComponent(locationData.latitude || 0);
+            const safeLongitude = encodeURIComponent(locationData.longitude || 0);
 
             router.visit('/', {
                 method: 'get',
                 data: { latitude: safeLatitude, longitude: safeLongitude },
-                preserveState: true
+                preserveState: true,
             });
+        } else if (tag === 'Country') {
+            await fetchLocationData(); // Await the location data
+            const safeCountryCode = encodeURIComponent(locationData.countryCode || '');
 
+            router.visit('/', {
+                method: 'get',
+                data: {
+                    forCountry: safeCountryCode,
+                },
+                preserveState: true,
+            });
+        } else if (tag === 'Most commented') {
+            router.visit('/', {
+                method: 'get',
+                data: {
+                    filter: 'Most commented',
+                },
+                preserveState: true,
+            });
+        } else if (tag === 'Most liked') {
+            router.visit('/', {
+                method: 'get',
+                data: {
+                    filter: 'Most liked',
+                },
+                preserveState: true,
+            });
+        } else {
+            router.visit('/', {
+                method: 'get',
+                preserveState: true,
+            });
         }
     };
 

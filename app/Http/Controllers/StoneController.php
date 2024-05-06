@@ -46,31 +46,45 @@ class StoneController extends BaseController
     {
         $perPage = 20;
 
-        // Inicializa $stones como una colección vacía o un valor predeterminado
-        $stones = collect([]);
-
         if ($request->has(['latitude', 'longitude'])) {
-            // Asegúrate de convertir los valores de entrada a tipo float
             $latitude = $request->latitude;
             $longitude = $request->longitude;
-
-
-
             try {
                 $stones = $this->stoneService->findStonesNearLocation($latitude, $longitude, $perPage);
-
+                return Inertia::render('Stones/Index', ['stones' => $stones]);
             } catch (Exception $e) {
                 return Inertia::render('Error', ['message' => $e->getMessage()]);
             }
-        } else {
-            $filter = ['active' => true];
-            $stones = $this->stoneService->getStones($perPage, $filter);
         }
-        // print_r($stones);
-        return Inertia::render('Stones/Index', [
-            'stones' => $stones
-        ]);
+
+        if ($request->has('forCountry')) {
+            $forCountry = $request->forCountry;
+            $stones = $this->stoneService->getStonesFilteredByCountry($forCountry);
+            return Inertia::render('Stones/Index', ['stones' => $stones]);
+        }
+
+        if ($request->has('filter')) {
+            $filter = $request->filter;
+            switch ($filter) {
+                case 'Most commented':
+                    $stones = $this->stoneService->getStonesOrderedByMostCommented();
+                    break;
+                case 'Most liked':
+                    $stones = $this->stoneService->getStonesOrderedByMostLiked();
+                    break;
+                case 'Newest':
+                    $stones = $this->stoneService->getStonesOrderedByMostRecent();
+                    break;
+                default:
+                    return Inertia::render('Error', ['message' => 'Invalid filter type provided']);
+            }
+            return Inertia::render('Stones/Index', ['stones' => $stones]);
+        }
+
+        // Si ninguna condición coincide, retorna un mensaje de error por defecto
+        return Inertia::render('Error', ['message' => 'No valid filter or location data provided']);
     }
+
 
 
 
