@@ -130,7 +130,7 @@ class StoneService extends BaseService
     {
         try {
             // Ensure required fields are present
-            $requiredFields = ['image', 'title', 'latitude', 'longitude'];
+            $requiredFields = ['image', 'title', 'latitude', 'longitude', 'country', 'city'];
             foreach ($requiredFields as $field) {
                 if (!array_key_exists($field, $data)) {
                     throw new Exception("Missing required field: {$field}");
@@ -144,8 +144,10 @@ class StoneService extends BaseService
             }
             $data['user_id'] = $userId;
 
+
+
             // Create the stone
-            return $this->stoneRepository->create($data);
+            return $this->stoneRepository->createStone($data);
         } catch (Exception $e) {
             // Append the incoming data to the exception message for better debugging
             $dataString = json_encode($data);

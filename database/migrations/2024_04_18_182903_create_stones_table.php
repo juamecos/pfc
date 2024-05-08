@@ -28,7 +28,7 @@ return new class extends Migration {
             $table->index('user_id', 'stones_user_id_index');
 
             $table->string('moderation_status')->default('pending');
-            $table->integer('report_count');
+            $table->unsignedInteger('report_count')->default(0);
 
             // Specify geometry type, SRID, and an explicit name for the spatial index
             $table->geometry('location', 'POINT', 4326);

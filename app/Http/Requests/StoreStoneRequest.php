@@ -22,10 +22,12 @@ class StoreStoneRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'required|image',
+            'image' => 'required|url',
             'title' => 'required|string|max:255',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            'country' => 'required|string|max:2',
+            'city' => 'nullable|string|max:255',
         ];
     }
 }

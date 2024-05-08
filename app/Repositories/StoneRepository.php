@@ -21,6 +21,11 @@ class StoneRepository extends BaseRepository
         parent::__construct($stone);
     }
 
+    public function createStone($data)
+    {
+        $stone = Stone::create($data);
+    }
+
     /**
      * Retrieve stones ordered by most commented.
      *

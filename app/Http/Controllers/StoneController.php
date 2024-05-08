@@ -6,6 +6,7 @@ use App\Models\Stone;
 use App\Http\Requests\StoreStoneRequest;
 use App\Http\Requests\UpdateStoneRequest;
 use App\Services\StoneService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -46,43 +47,60 @@ class StoneController extends BaseController
     {
         $perPage = 20;
 
-        if ($request->has(['latitude', 'longitude'])) {
-            $latitude = $request->latitude;
-            $longitude = $request->longitude;
-            try {
+        try {
+            if ($request->has(['latitude', 'longitude'])) {
+                $latitude = $request->input('latitude');
+                $longitude = $request->input('longitude');
+
                 $stones = $this->stoneService->findStonesNearLocation($latitude, $longitude, $perPage);
-                return Inertia::render('Stones/Index', ['stones' => $stones]);
-            } catch (Exception $e) {
-                return Inertia::render('Error', ['message' => $e->getMessage()]);
+
+                return Inertia::render('Stones/Index', [
+                    'stones' => $stones
+                ]);
             }
-        }
 
-        if ($request->has('forCountry')) {
-            $forCountry = $request->forCountry;
-            $stones = $this->stoneService->getStonesFilteredByCountry($forCountry);
-            return Inertia::render('Stones/Index', ['stones' => $stones]);
-        }
+            if ($request->has('forCountry')) {
+                $forCountry = $request->input('forCountry');
+                $stones = $this->stoneService->getStonesFilteredByCountry($forCountry, $perPage);
 
-        if ($request->has('filter')) {
-            $filter = $request->filter;
-            switch ($filter) {
-                case 'Most commented':
-                    $stones = $this->stoneService->getStonesOrderedByMostCommented();
-                    break;
-                case 'Most liked':
-                    $stones = $this->stoneService->getStonesOrderedByMostLiked();
-                    break;
-                case 'Newest':
-                    $stones = $this->stoneService->getStonesOrderedByMostRecent();
-                    break;
-                default:
-                    return Inertia::render('Error', ['message' => 'Invalid filter type provided']);
+                return Inertia::render('Stones/Index', [
+                    'stones' => $stones
+                ]);
             }
-            return Inertia::render('Stones/Index', ['stones' => $stones]);
-        }
 
-        // Si ninguna condición coincide, retorna un mensaje de error por defecto
-        return Inertia::render('Error', ['message' => 'No valid filter or location data provided']);
+            if ($request->has('filter')) {
+                $filter = $request->input('filter');
+
+                switch ($filter) {
+                    case 'Most commented':
+                        $stones = $this->stoneService->getStonesOrderedByMostCommented($perPage);
+                        break;
+                    case 'Most liked':
+                        $stones = $this->stoneService->getStonesOrderedByMostLiked($perPage);
+                        break;
+                    case 'Newest':
+                        $stones = $this->stoneService->getStonesOrderedByMostRecent($perPage);
+                        break;
+                    default:
+                        return Inertia::render('Error', [
+                            'message' => 'Invalid filter type provided'
+                        ]);
+                }
+
+                return Inertia::render('Stones/Index', [
+                    'stones' => $stones
+                ]);
+            }
+
+            // Valor predeterminado: Most Recent
+            $stones = $this->stoneService->getStonesOrderedByMostRecent($perPage);
+
+            return Inertia::render('Stones/Index', [
+                'stones' => $stones
+            ]);
+        } catch (Exception $e) {
+            return Inertia::render('Error', ['message' => $e->getMessage()]);
+        }
     }
 
 
@@ -129,7 +147,9 @@ class StoneController extends BaseController
      */
     public function create()
     {
-        return $this->render('Stones/Create');
+        return $this->render('Stones/Create', [
+            'user' => auth()->user()
+        ]);
     }
 
     /**
@@ -138,10 +158,15 @@ class StoneController extends BaseController
      * @param StoreStoneRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreStoneRequest $request)
+    public function store(StoreStoneRequest $request): RedirectResponse
     {
-        $stone = Stone::create($request->validated());
-        return Redirect::route('stones.show', $stone);
+
+        $validatedData = $request->validated();
+
+
+        $this->stoneService->createStone($validatedData);
+
+        return redirect()->route('stone.index')->with('success', 'Stone created successfully!');
     }
 
     /**

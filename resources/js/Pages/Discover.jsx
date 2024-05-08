@@ -1,36 +1,18 @@
-import React, { useState, useEffect } from 'react';
+// Discover.js
+import React, { useEffect } from 'react';
 import { usePage, Head } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import CustomMap from '@/Components/Map/CustomMap';
 import useGeolocation from '@/hooks/useGeolocation';
 import inertiaManualVisit from '@/lib/inertiaManualVisit';
+import useMapCoordinates from '@/hooks/useMapCoordinates';
 
 export default function Discover() {
     const { stones } = usePage().props;
     const { locationData, fetchLocationData } = useGeolocation();
-
-    console.log(stones);
-
-    // Centro del mapa con valores predeterminados
     const initialCenter = [locationData?.latitude || 51.505, locationData?.longitude || -0.09];
-    const [center, setCenter] = useState(initialCenter);
-    const [zoom] = useState(13);
 
-    // Coordenadas iniciales para los límites del área
-    const initialNorthEast = { latitude: center[0] + 0.1, longitude: center[1] + 0.1 };
-    const initialSouthWest = { latitude: center[0] - 0.1, longitude: center[1] - 0.1 };
-    const [northEast, setNorthEast] = useState(initialNorthEast);
-    const [southWest, setSouthWest] = useState(initialSouthWest);
-
-    const handleAreaChange = (northEast, southWest) => {
-        setNorthEast(northEast);
-        setSouthWest(southWest);
-
-        inertiaManualVisit('/discover', 'get', {
-            northEast,
-            southWest
-        });
-    };
+    const { center, setCenter, zoom, northEast, southWest, handleAreaChange } = useMapCoordinates(initialCenter);
 
     useEffect(() => {
         fetchLocationData();
@@ -39,10 +21,16 @@ export default function Discover() {
     useEffect(() => {
         if (locationData?.latitude && locationData?.longitude) {
             setCenter([locationData.latitude, locationData.longitude]);
-            setNorthEast({ latitude: locationData.latitude + 0.1, longitude: locationData.longitude + 0.1 });
-            setSouthWest({ latitude: locationData.latitude - 0.1, longitude: locationData.longitude - 0.1 });
         }
-    }, [locationData]);
+    }, [locationData, setCenter]);
+
+    const handleAreaUpdate = (newNE, newSW) => {
+        handleAreaChange(newNE, newSW);
+        inertiaManualVisit('/discover', 'get', {
+            northEast: newNE,
+            southWest: newSW
+        });
+    };
 
     return (
         <GuestLayout>
@@ -55,12 +43,11 @@ export default function Discover() {
                         zoom={zoom}
                         northEast={northEast}
                         southWest={southWest}
-                        onAreaChange={handleAreaChange}
+                        onAreaChange={handleAreaUpdate}
                         stones={stones}
                     />
                 </div>
             </div>
-
         </GuestLayout>
     );
 }

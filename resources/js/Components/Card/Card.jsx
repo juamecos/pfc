@@ -3,9 +3,11 @@ import CardImage from "./CardImage";
 import CardFooter from "./CardFooter";
 
 import { heartOutline, chatbubbleOutline, eyeOutline } from 'ionicons/icons';
+import useTraceUpdate from "@/hooks/useTraceUpdate";
 
 
 export default function Card({ stone }) {
+    useTraceUpdate({ stone })
     const { founds, likes, comments } = stone;
 
     const icons = [

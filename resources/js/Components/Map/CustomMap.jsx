@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Rectangle, useMapEvents, Marker } from 'react-leaflet';
+import AreaSelector from '@/Components/Map/AreaSelector';
 import L from 'leaflet';
 
 const userMarkerIcon = new L.Icon({
@@ -20,56 +21,7 @@ const stoneMarkerIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-function AreaSelector({ onAreaChange, initialNE, initialSW }) {
-    const [bounds, setBounds] = useState([
-        [initialNE.latitude, initialNE.longitude],
-        [initialSW.latitude, initialSW.longitude]
-    ]);
 
-    const updateBounds = (map) => {
-        const newBounds = map.getBounds();
-        const northEast = newBounds.getNorthEast();
-        const southWest = newBounds.getSouthWest();
-
-        setBounds([
-            [northEast.lat, northEast.lng],
-            [southWest.lat, southWest.lng]
-        ]);
-
-        onAreaChange(
-            { latitude: northEast.lat, longitude: northEast.lng },
-            { latitude: southWest.lat, longitude: southWest.lng }
-        );
-    };
-
-    useMapEvents({
-        dragend(e) {
-            updateBounds(e.target);
-        },
-        zoomend(e) {
-            updateBounds(e.target);
-        }
-    });
-
-    useEffect(() => {
-        setBounds([
-            [initialNE.latitude, initialNE.longitude],
-            [initialSW.latitude, initialSW.longitude]
-        ]);
-    }, [initialNE, initialSW]);
-
-    return (
-        <Rectangle
-            bounds={bounds}
-            pathOptions={{
-                color: 'transparent', // Borde transparente
-                weight: 0, // Sin borde
-                opacity: 0, // Sin opacidad del borde
-                fillOpacity: 0 // Sin relleno
-            }}
-        />
-    );
-}
 
 function calculateDynamicHeightInRem() {
     const pixelsPerRem = 16;
@@ -119,4 +71,3 @@ export default function CustomMap({ center, zoom = 1, northEast, southWest, onAr
 }
 
 
-// TODO hemos cambiado vite.config.js, hemos instalado MarkerCluster Hemos importado os estilos de lealet en app.css, las piedras si se ven pero no con custom icon

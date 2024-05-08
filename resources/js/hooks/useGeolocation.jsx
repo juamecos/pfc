@@ -1,3 +1,4 @@
+// useGeolocation.js
 import { useState, useCallback } from 'react';
 
 export default function useGeolocation() {
@@ -17,34 +18,36 @@ export default function useGeolocation() {
 
         navigator.geolocation.getCurrentPosition(async (position) => {
             const { latitude, longitude } = position.coords;
-
-            const apiKey = import.meta.env.VITE_REACT_APP_BIG_DATA_CLOUD_API_KEY; // Your API key here
-            const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en&key=${apiKey}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                const newLocationDetails = {
-                    latitude,
-                    longitude,
-                    countryCode: data.countryCode,
-                    city: data.locality
-                };
-
-                setLocationData(newLocationDetails);
-                localStorage.setItem('geolocationData', JSON.stringify(newLocationDetails));
-            } catch (fetchError) {
-                setError('Error obtaining location: ' + fetchError.message);
-                localStorage.setItem('geolocationError', fetchError.message);
-            }
+            await reverseGeocode({ latitude, longitude });
         }, (geoError) => {
-            setError('Location permission denied. Please enable location services to use this feature.');
+            const errorMessage = 'Location permission denied. Please enable location services to use this feature.';
+            setError(errorMessage);
             localStorage.setItem('geolocationError', geoError.message);
         });
     }, []);
 
-    // Return the hook data
-    return { locationData, error, fetchLocationData };
-};
+    const reverseGeocode = useCallback(async ({ latitude, longitude }) => {
+        const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
 
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            const newLocationDetails = {
+                latitude,
+                longitude,
+                countryCode: data.countryCode || '',
+                city: data.locality || ''
+            };
+
+            setLocationData(newLocationDetails);
+            localStorage.setItem('geolocationData', JSON.stringify(newLocationDetails));
+        } catch (fetchError) {
+            const errorMessage = 'Error obtaining location: ' + fetchError.message;
+            setError(errorMessage);
+            localStorage.setItem('geolocationError', fetchError.message);
+        }
+    }, []);
+
+    return { locationData, error, fetchLocationData, reverseGeocode };
+}
