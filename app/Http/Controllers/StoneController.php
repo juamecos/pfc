@@ -215,6 +215,6 @@ class StoneController extends BaseController
     public function destroy(Stone $stone)
     {
         $stone->delete();
-        return Redirect::route('stones.index');
+        return Redirect::route('stone.index');
     }
 }

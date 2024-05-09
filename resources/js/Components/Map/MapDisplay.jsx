@@ -5,7 +5,7 @@ import L from 'leaflet';
 import MapBase from './MapBase';
 
 const stoneMarkerIcon = new L.Icon({
-    iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-green.png',
+    iconUrl: 'https://cdn.jsdelivr.net/gh/pointhi/leaflet-color-markers@master/img/marker-icon-blue.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
@@ -13,10 +13,11 @@ const stoneMarkerIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-export default function MapDisplay({ center, zoom = 1, stones }) {
+export default function MapDisplay({ center, zoom = 1, heightProportion = 0.4, stones }) {
     return (
-        <MapBase center={center} zoom={zoom}>
+        <MapBase center={center} zoom={zoom} heightProportion={heightProportion}>
             {stones.map((stone) => (
+
                 <Marker
                     key={stone.id}
                     position={[stone.latitude, stone.longitude]}
