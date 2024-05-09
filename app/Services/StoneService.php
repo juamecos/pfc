@@ -65,26 +65,42 @@ class StoneService extends BaseService
      * @return mixed
      * @throws Exception
      */
-    public function findStoneByID(int $stoneId)
+    public function findStoneByID(int $stoneId): array
     {
         try {
             $stone = $this->stoneRepository->find($stoneId);
             if (!$stone) {
                 throw new Exception("Stone with ID {$stoneId} not found.");
             }
+
             // Convert the model to an array (or fetch as array from the start if possible)
             $stoneData = $stone->toArray();
 
-            // Filter data based on user role
-            if (!Auth::check() || !Auth::user()->hasRole(['admin', 'moderator'])) {
-                unset($stoneData['email']);
-                unset($stoneData['role']);
+            // Check user permissions
+            $user = Auth::user();
+            $isOwner = $user && $user->id === $stone->user_id;
+            $hasAdminAccess = $user && ($user->is_admin || $user->is_moderator);
+
+            // Remove sensitive fields if the user is not authorized
+            if (!$isOwner && !$hasAdminAccess) {
+                unset($stoneData['code']);
+                unset($stoneData['status']);
+                unset($stoneData['report_count']);
+                unset($stoneData['moderation_status']);
+            }
+
+            // Remove sensitive fields if the user is not authorized
+            if (!$hasAdminAccess) {
+                unset($stoneData['status']);
+                unset($stoneData['report_count']);
+                unset($stoneData['moderation_status']);
             }
 
             return $stoneData;
         } catch (Exception $e) {
             throw new Exception("Failed to find stone with ID {$stoneId}: " . $e->getMessage());
         }
+
     }
 
     /**

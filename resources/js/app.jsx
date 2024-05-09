@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, Suspense } from 'react';
 import './bootstrap';
 import '../css/app.css';
 
@@ -7,7 +7,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import RootErrorBoundary from './ErrorBoundaries/RootErrorBoundary';
 import Loader from '@/Components/Loader';
-import { Suspense } from 'react'
+
 
 import 'leaflet/dist/leaflet.css';
 
@@ -21,9 +21,11 @@ createInertiaApp({
         hydrateRoot(el,
             <StrictMode>
                 <Suspense fallback={<Loader />}>
+
                     <RootErrorBoundary>
                         <App {...props} />
                     </RootErrorBoundary>
+
                 </Suspense >
             </StrictMode>
         )

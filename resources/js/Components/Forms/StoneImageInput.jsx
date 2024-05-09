@@ -1,7 +1,10 @@
 // Components/Forms/StoneImageInput.js
-import React, { useEffect, useRef } from 'react';
-import useCloudinaryUpload from '@/hooks/useCloudinaryUpload';
+import React, { useEffect, useRef, useState } from 'react';
 import InputLabel from '@/Components/Forms/InputLabel';
+import InputError from '@/Components/Forms/InputError';
+import Icon from '@/Components/Icon';
+import { imageOutline } from 'ionicons/icons';
+
 
 
 /**
@@ -18,16 +21,20 @@ import InputLabel from '@/Components/Forms/InputLabel';
  */
 export default function StoneImageInput({
     label = 'Image',
-    subLabel = "Add an image of the stone here. Don't forget to add the name of the photographer if you haven't taken this yourself.",
+    subLabel = "Use your camera to capture a photo or select one from your device.",
     cloudName = 'lapisgame',
     uploadPreset = 'stones_preset',
     folderPath = 'stones',
     onUpload = () => { },
+    initialImage = '',
     className = '',
+    disabled,
+    error,
     ...props
 }) {
     const cloudinaryRef = useRef();
     const widgetRef = useRef();
+    const [imageUrl, setImageUrl] = useState(initialImage);
     const errorRef = useRef()
 
     useEffect(() => {
@@ -47,32 +54,46 @@ export default function StoneImageInput({
             }
             if (result) {
                 onUpload(result.data.info.files[0].uploadInfo.url)
+                setImageUrl(result.data.info.files[0].uploadInfo.url)
             }
         });
     }, []);
 
+    const openWidget = () => {
+        if (widgetRef.current) {
+            widgetRef.current.open();
+        }
+    };
+
     return (
         <div className={`flex-1 ${className}`} {...props}>
-            <InputLabel label={label} subLabel={subLabel} />
-            <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-                <div className="flex items-center justify-center bg-gray-200 rounded-md h-36">
-                    <div className="w-full h-full">
-                        <button
-                            type="button"
-                            onClick={() => widgetRef.current.open()}
-                            className="flex flex-col items-center justify-center w-full h-full cursor-pointer"
+            <InputLabel htmlFor="stone-image-upload" label={label} subLabel={subLabel} />
+            <InputError message={error} className="mt-2" />
+            <input
+                id="stone-image-upload"
+                type="hidden"
+                aria-labelledby="stone-image-upload"
+                value={imageUrl}
+                readOnly
+            />
+            <button
+                type="button"
+                onClick={openWidget}
+                disabled={disabled}
+                className={`block w-full text-sm text-blue-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none p-4 my-8 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+                <Icon iconName={imageOutline} /> Click here to choose a file or make a picture
+            </button>
 
-                        >
-
-                            <div className="text-center text-sm text-gray-600">
-                                Choose a file or make a picture
-                            </div>
-                        </button>
-                    </div>
+            {imageUrl && (
+                <div className="flex items-center justify-center bg-gray-200 rounded-md h-36 mt-4">
+                    <img
+                        src={imageUrl}
+                        alt="Uploaded Stone Image"
+                        className="object-cover w-full h-full rounded-md"
+                    />
                 </div>
-
-            </div>
-            {/* {error && <p className="mt-2 text-red-600 text-sm">{error}</p>} */}
+            )}
         </div>
     );
 }

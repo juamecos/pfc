@@ -3,7 +3,7 @@ import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
 
 import BottomNavigator from '@/Components/BottomNavigator';
-
+import UpButton from '@/Components/UpButton';
 
 
 export default function Guest({ children }) {
@@ -18,7 +18,7 @@ export default function Guest({ children }) {
                 <BottomNavigator />
             </main>
             {/* <Footer /> */}
-
+            <UpButton />
         </div>
     );
 }

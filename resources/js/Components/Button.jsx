@@ -25,7 +25,8 @@ export default function Button({
   loading = false,
   className = '',
   icon: Icon,
-  iconPosition = 'left'
+  iconPosition = 'left',
+  type = 'button'
 }) {
   const baseStyle = 'active:outline focus:outline-none font-medium rounded-full text-center text-sm px-5 py-2.5 mb-2 transition ease-in-out duration-150';
 
@@ -70,7 +71,7 @@ export default function Button({
     </Link>
   ) : (
     <button
-      type="button"
+      type={type}
       className={buttonClassName}
       onClick={onClick}
       disabled={disabled || loading}

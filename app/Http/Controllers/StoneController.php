@@ -177,7 +177,9 @@ class StoneController extends BaseController
      */
     public function show(Stone $stone)
     {
-        return $this->render('Stones/Show', ['stone' => $stone]);
+        $stoneDetails = $this->stoneService->findStoneByID($stone->id);
+
+        return Inertia::render('Stones/Show', ['stone' => $stoneDetails]);
     }
 
     /**

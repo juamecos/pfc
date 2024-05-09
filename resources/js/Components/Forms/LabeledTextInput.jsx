@@ -1,6 +1,7 @@
 // LabeledTextInput.js
 import InputLabel from './InputLabel';
 import TextInput from './TextInput';
+import InputError from '@/Components/Forms/InputError';
 import { forwardRef } from 'react';
 
 /**
@@ -24,12 +25,14 @@ import { forwardRef } from 'react';
  * @returns {JSX.Element} - The LabeledTextInput component.
  */
 const LabeledTextInput = forwardRef(function LabeledTextInput(
-    { htmlFor, label, subLabel, id, name, value, onChange, placeholder, type = 'text', isFocused = false, className = '', ...props },
+    { htmlFor, label, subLabel, id, name, value, onChange, placeholder, type = 'text', isFocused = false, className = '', error, ...props },
     ref
 ) {
     return (
         <div className="my-4">
             <InputLabel htmlFor={htmlFor} label={label} subLabel={subLabel} />
+            <InputError message={error && error} className="mt-2" />
+
             <TextInput
                 id={id}
                 name={name}

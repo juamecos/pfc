@@ -9,17 +9,26 @@
  * @param {Object} [props] - The props of the component.
  * @returns {JSX.Element} The input label component.
  */
-export default function InputLabel({ htmlFor, label, subLabel, value, className = '', children, ...props }) {
+export default function InputLabel({
+    htmlFor,
+    label,
+    subLabel,
+    value,
+    className = '',
+    children,
+    ...props
+}) {
     return (
-        <label htmlFor={htmlFor} {...props} className={`block font-medium text-sm text-gray-700 m${className}`}>
+        <div className={`mb-2 ${className}`} {...props}>
             {label || value ? (
-                <>
-                    <p className="font-bold text-lg flex items-center ">{label || value}</p>
-                    {subLabel && <p className="text-gray-500 text-base mb-2">{subLabel}</p>}
-                </>
+                <label htmlFor={htmlFor} className="block font-medium text-lg text-gray-900">
+                    {label || value}
+                </label>
             ) : (
                 children
             )}
-        </label>
+            {subLabel && <span className="block text-gray-500 text-sm mt-1">{subLabel}</span>}
+        </div>
     );
 }
+

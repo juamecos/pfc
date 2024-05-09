@@ -1,6 +1,7 @@
-// StoneForm.js
+// Components/Stone/StoneForm.jsx
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import LabeledTextInput from '@/Components/Forms/LabeledTextInput';
+import InputError from '@/Components/Forms/InputError';
 import MapLocationInput from '@/Components/Forms/MapLocationInput';
 import useGeolocation from '@/hooks/useGeolocation';
 import useMapCoordinates from '@/hooks/useMapCoordinates';
@@ -8,32 +9,49 @@ import TextAreaInput from '@/Components/Forms/TextAreaInput';
 import StoneImageInput from '@/Components/Forms/StoneImageInput';
 import ErrorBoundary from '@/ErrorBoundaries/ErrorBoundary';
 import Loader from '@/Components/Loader';
-import { useForm } from '@inertiajs/react';
+import Button from '@/Components/Button';
+import { useForm, usePage } from '@inertiajs/react';
 
-export default function StoneForm() {
+export default function StoneForm({ initialData = {} }) {
+    const { auth } = usePage().props;
     const { locationData, fetchLocationData } = useGeolocation();
     const initialCenter = useMemo(() => [locationData?.latitude || 51.505, locationData?.longitude || -0.09], [locationData]);
-
     const { zoom, center, setCenter } = useMapCoordinates(initialCenter);
 
+    // Extract initial data with default values
+    const {
+        title = '',
+        country = '',
+        city = '',
+        description = '',
+        image = '',
+        latitude = initialCenter[0],
+        longitude = initialCenter[1],
+        id,
+        user = { id: null }
+    } = initialData;
 
-    const { data, errors, setData, post } = useForm({
-        title: '',
-        country: '',
-        city: '',
-        description: '',
-        image: '',
-        latitude: initialCenter[0],
-        longitude: initialCenter[1]
+    // If `id` is present (edit mode), check ownership
+    const isEdit = Boolean(id);
+    const isOwner = auth.user && auth.user.id === user.id;
+    const isDisabled = isEdit && !isOwner;
+
+
+    const { data, errors, setData, post, put } = useForm({
+        title,
+        country,
+        city,
+        description,
+        image,
+        latitude,
+        longitude
     });
 
     useEffect(() => {
-        console.log("Fetching geolocation data");
         fetchLocationData();
     }, [fetchLocationData]);
 
     useEffect(() => {
-
         if (locationData?.latitude && locationData?.longitude && locationData?.country && locationData?.city) {
             setCenter([locationData.latitude, locationData.longitude]);
             setData((prevData) => ({
@@ -43,25 +61,17 @@ export default function StoneForm() {
                 country: locationData.country || '',
                 city: locationData.city || ''
             }));
-
-            console.log("From useEffect StoneForm", data);
         }
     }, [locationData, setCenter, setData]);
 
-    const handleTitleChange = useCallback((e) => setData('title', e.target.value), [setData]);
-
-
-
-
-
-
-
-
+    const handleTitleChange = useCallback((e) => {
+        if (!isDisabled) setData('title', e.target.value);
+    }, [isDisabled, setData]);
 
     const handleLocationChange = useCallback((newLocationData) => {
+        if (isDisabled) return;
+
         const { latitude, longitude, countryCode, city } = newLocationData;
-        console.log('Countricode desde handleLocationChange StoneForm', countryCode);
-        console.log("From handleLocationChange StoneForm", latitude, longitude, countryCode, city);
         setCenter([latitude, longitude]);
         setData((prevData) => ({
             ...prevData,
@@ -70,30 +80,26 @@ export default function StoneForm() {
             country: countryCode || prevData.country,
             city: city || prevData.city
         }));
-    }, [setCenter, setData]);
+    }, [isDisabled, setCenter, setData]);
 
+    const handleDescriptionChange = useCallback((e) => {
+        if (!isDisabled) setData('description', e.target.value);
+    }, [isDisabled, setData]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const handleDescriptionChange = useCallback((e) => setData('description', e.target.value), [setData]);
-    const handleImageUpload = useCallback((newImage) => setData('image', newImage), [setData]);
+    const handleImageUpload = useCallback((newImage) => {
+        if (!isDisabled) setData('image', newImage);
+    }, [isDisabled, setData]);
 
     const handleSubmit = useCallback((e) => {
         e.preventDefault();
-        post(route('stone.store'));
-    }, [post]);
+        if (isDisabled) return;
+
+        if (id) {
+            put(route('stone.update', id));
+        } else {
+            post(route('stone.store'));
+        }
+    }, [post, put, id, isDisabled]);
 
     const labeledTextInputProps = useMemo(() => ({
         htmlFor: 'title',
@@ -105,8 +111,10 @@ export default function StoneForm() {
         onChange: handleTitleChange,
         placeholder: 'Enter title here',
         isFocused: true,
-        className: 'mb-12'
-    }), [data.title, handleTitleChange]);
+        className: 'mb-12',
+        disabled: isDisabled,
+        error: errors && errors.title
+    }), [data.title, handleTitleChange, isDisabled]);
 
     const textAreaInputProps = useMemo(() => ({
         id: 'description',
@@ -117,11 +125,22 @@ export default function StoneForm() {
         subLabel: 'A short description of the stone (Optional)',
         placeholder: 'Write a description here...',
         rows: 4,
-        isFocused: false
-    }), [data.description, handleDescriptionChange]);
+        isFocused: false,
+        disabled: isDisabled,
+        error: errors && errors.description
+    }), [data.description, handleDescriptionChange, isDisabled]);
 
     return (
         <form onSubmit={handleSubmit}>
+            <StoneImageInput
+                cloudName="lapisgame"
+                uploadPreset="stones_preset"
+                folderPath="stones"
+                initialImage={image ? image : ''}
+                onUpload={handleImageUpload}
+                disabled={isDisabled}
+                error={errors && errors.image}
+            />
             <LabeledTextInput {...labeledTextInputProps} />
             <ErrorBoundary>
                 <Suspense fallback={<Loader />}>
@@ -130,29 +149,33 @@ export default function StoneForm() {
                         zoom={zoom}
                         onLocationChange={handleLocationChange}
                         heightProportion="0.4"
+                        disabled={isDisabled}
+                        errors={errors && errors}
                     />
+
                 </Suspense>
             </ErrorBoundary>
             <TextAreaInput {...textAreaInputProps} />
 
-            <StoneImageInput
-                cloudName="lapisgame"
-                uploadPreset="stones_preset"
-                folderPath="stones"
-                onUpload={handleImageUpload}
-            />
+
 
             {Object.keys(errors).length > 0 && (
-                <ul className="text-red-500 list-disc list-inside">
-                    {Object.entries(errors).map(([field, message]) => (
-                        <li key={field}>{`${field}: ${message}`}</li>
-                    ))}
-                </ul>
+
+                Object.entries(errors).map(([field, message]) => (
+                    console.log(errors)
+                ))
+
             )}
 
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-                Submit
-            </button>
+            <Button
+                type="submit"
+                buttonType="green"
+                size="md"
+                disabled={isDisabled}
+                className={`mt-4 ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+                {id ? 'Update Stone' : 'Submit'}
+            </Button>
         </form>
     );
 }

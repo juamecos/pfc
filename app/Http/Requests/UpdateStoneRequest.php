@@ -11,7 +11,7 @@ class UpdateStoneRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,13 @@ class UpdateStoneRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'image' => 'required|url',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'country' => 'required|string|max:2',
+            'city' => 'nullable|string|max:255',
         ];
     }
 }

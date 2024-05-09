@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useRef } from 'react';
 import InputLabel from '@/Components/Forms/InputLabel';
+import InputError from '@/Components/Forms/InputError';
 
 /**
  * A custom React component for rendering a text area field with a label.
@@ -21,7 +22,7 @@ import InputLabel from '@/Components/Forms/InputLabel';
  * @returns {JSX.Element} - The rendered text area field.
  */
 export default forwardRef(function TextAreaInput(
-    { id, name, value, onChange, placeholder, label, subLabel, rows = 4, className = '', isFocused = false, ...props },
+    { id, name, value, onChange, placeholder, label, subLabel, rows = 4, className = '', isFocused = false, error, ...props },
     ref
 ) {
     const textArea = ref ? ref : useRef();
@@ -35,6 +36,7 @@ export default forwardRef(function TextAreaInput(
     return (
         <div className="my-4">
             <InputLabel htmlFor={id} label={label} subLabel={subLabel} />
+            <InputError message={error} className="mt-2" />
             <textarea
                 id={id}
                 name={name}
