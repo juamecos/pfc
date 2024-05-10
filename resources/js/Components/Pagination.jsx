@@ -32,6 +32,7 @@ export default function Pagination({ currentPage, totalPages, links, nextPage, p
 
         {pageNumbers.map(page => (
           <li key={page}>
+
             <Link
               href={`${links[page].url}`}
               preserveScroll

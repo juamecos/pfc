@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 abstract class BaseService
 {
-    protected $repository;
+    protected BaseRepository $repository;
 
     public function __construct(BaseRepository $repository)
     {

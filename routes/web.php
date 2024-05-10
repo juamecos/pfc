@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoneController;
 use Illuminate\Foundation\Application;
@@ -32,6 +33,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/discover', [StoneController::class, 'discover'])->name('stones.discover');
+
+Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
+Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+Route::get('comments/stone/{stoneId}', [CommentController::class, 'getActiveCommentsByStoneId'])->name('comments.byStone');
+Route::get('comments/stone/{stoneId}/fetch', [CommentController::class, 'getActiveCommentsByStoneId'])->name('comments.byStone.fetch');
 /**
  * Group routes that require user authentication and email verification.
  *

@@ -9,8 +9,15 @@ import { router, usePage } from '@inertiajs/react';
 import { heartOutline, chatbubbleOutline, eyeOutline } from 'ionicons/icons';
 import Modal from '@/Components/Modal';
 import MapDisplay from '../Map/MapDisplay';
+import Tabs from '@/Components/Tabs/Tabs';
+import CommentsSection from '../Comments/CommentsSection';
+import StoneInfo from './StoneInfo';
+import CardHeader from '../Card/CardHeader';
+CommentsSection
 
 function StoneDetails({ stone }) {
+    const [activeTab, setActiveTab] = useState('info');
+
     const { auth } = usePage().props;
     const likesCount = useMemo(() => stone.likes.length, [stone.likes]);
     const commentsCount = useMemo(() => stone.comments.length, [stone.comments]);
@@ -34,6 +41,8 @@ function StoneDetails({ stone }) {
         { icon: chatbubbleOutline, size: 20, text: `${commentsCount} comments` }
     ];
 
+    // Delete comments
+
     const openDeleteModal = useCallback(() => {
         setIsDeleteModalOpen(true);
     }, []);
@@ -47,64 +56,39 @@ function StoneDetails({ stone }) {
         router.delete(route('stone.destroy', stone.id));
     }, [closeDeleteModal, stone.id]);
 
+
+    // Edit Stone
     const handleEdit = useCallback(() => {
         router.get(route('stone.edit', stone.id));
     }, [stone.id]);
 
+
+    // Tabs
+    const tabs = [
+        { value: 'info', label: 'Stone Info' },
+        { value: 'map', label: 'Map' },
+        { value: 'comments', label: 'Comments' },
+        ...(isOwner ? [{ value: 'actions', label: 'Actions' }] : [])
+    ];
+
+    const tabContent = {
+        map: <MapDisplay center={center} zoom={zoom} stones={[stone]} />,
+        info: <StoneInfo stone={stone} hasAdminAccess={hasAdminAccess} isOwner={isOwner} />,
+        comments: <CommentsSection stoneId={stone.id} initialComments={stone.comments} />,
+        actions: isOwner ? <StoneActions onDelete={openDeleteModal} onEdit={handleEdit} /> : null
+    };
     return (
         <main className="mx-auto mb-[30rem] max-w-[910px] p-4  bg-white">
+            <CustomText h1 bold title='Stone Details' margin='mb-3' />
+            <CardHeader stone={stone} />
             <StoneImage stone={stone} />
             <CardFooter icons={icons} />
-            <div className="flex items-center space-x-4 my-6 px-2 py-2 rounded-full bg-blue-200">
-                <Avatar src={stone.user.avatar} alt={`${stone.user.name}'s avatar`} />
-                <div>
-                    <CustomText h2 title={stone.user.name} textColor="text-gray-900" margin="my-3" />
-                    <CustomText p bold title={`From ${stone.user.country}`} textColor="text-gray-700" margin="my-3" />
-                </div>
-            </div>
             <div className="mt-4 ">
-                <CustomText h1 bold title={stone.title} textColor="text-gray-900" margin="my-3" />
-                <CustomText p bold title={stone.description} margin="my-4" />
-                <CustomText p italic title={`Location: ${stone.city}, ${stone.country}`} textColor="text-sm text-gray-900" margin="my-3" />
-                <CustomText p title={`Coordinates: ${stone.latitude.toFixed(3)}, ${stone.longitude.toFixed(3)}`} textColor="text-sm text-gray-500" />
-                <CustomText p title={`Created at: ${new Date(stone.created_at).toLocaleDateString()}`} textColor="text-sm text-gray-500" />
-                <CustomText p title={`Updated at: ${new Date(stone.updated_at).toLocaleDateString()}`} textColor="text-sm text-gray-500" />
 
 
 
-                {hasAdminAccess && (
-                    <>
-
-                        <CustomText p title={`Status: ${stone.active ? 'Active' : 'Inactive'}`} textColor={stone.active ? 'text-green-500' : 'text-red-500'} />
-                        <CustomText p title={`Abuse: ${stone.abuse ? 'Reported' : 'No reports'}`} textColor={stone.abuse ? 'text-red-500' : 'text-gray-500'} />
-                        <CustomText p title={`Moderation Status: ${stone.moderation_status}`} textColor="text-sm text-gray-500" />
-                        <CustomText p title={`Report Count: ${stone.report_count}`} textColor="text-sm text-gray-500" />
-                    </>
-                )}
-                {isOwner && (
-                    <>
-                        <CustomText p title={`Code: ${stone.code}`} textColor="text-sm text-gray-500" />
-                        <div className="flex justify-left gap-4">
-                            <Button
-                                buttonType="red"
-                                size="md"
-                                onClick={openDeleteModal}
-                                className="my-4"
-                            >
-                                Delete Stone
-                            </Button>
-                            <Button
-                                buttonType="green"
-                                size="md"
-                                onClick={handleEdit}
-                                className="my-4"
-                            >Edit Stone</Button>
-                        </div>
-                    </>
-                )}
-                <div className='my-4'>
-                    <MapDisplay center={center} zoom={zoom} stones={[stone]} />
-                </div>
+                <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+                <div className="mt-4">{tabContent[activeTab]}</div>
 
 
                 <Modal show={isDeleteModalOpen} onClose={closeDeleteModal} maxWidth="md">

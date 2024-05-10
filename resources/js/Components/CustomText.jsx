@@ -44,8 +44,8 @@ export default function CustomText({
           h5 ? 'h5' :
             p ? 'p' : 'span'; // Default to span if no matching prop
 
-  const textSize = h1 ? 'text-4xl md:text-6xl'
-    : h2 ? 'text-3xl md:text-5xl'
+  const textSize = h1 ? 'text-3xl md:text-4xl'
+    : h2 ? 'text-2xl md:text-4xl'
       : h3 ? 'text-2xl md:text-4xl'
         : h4 ? 'text-xl md:text-3xl'
           : h5 ? 'text-lg md:text-2xl'

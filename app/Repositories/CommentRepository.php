@@ -6,6 +6,7 @@ use App\Models\Comment;
 
 class CommentRepository extends BaseRepository
 {
+    protected $commentRepository;
     /**
      * CommentRepository constructor.
      * Initializes with Comment model.
@@ -16,5 +17,4 @@ class CommentRepository extends BaseRepository
     {
         parent::__construct($comment);
     }
-
 }

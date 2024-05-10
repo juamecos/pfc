@@ -37,16 +37,22 @@ class BaseRepository
     /**
      * Paginate the given query into a simple paginator.
      *
-     * @param int $perPage
+     * @param int|null $perPage
      * @param array $filter
      * @param array $columns
+     * @param array $with
      * @return LengthAwarePaginator
      */
-    public function filteredPagination($perPage = null, array $filter = [], array $columns = ['*'])
+    public function filteredPagination($perPage = null, array $filter = [], array $columns = ['*'], array $with = []): LengthAwarePaginator
     {
-        return $this->model->where($filter)->paginate($perPage, $columns);
-    }
+        $query = $this->model->with($with);
 
+        foreach ($filter as $column => $value) {
+            $query->where($column, $value);
+        }
+
+        return $query->paginate($perPage, $columns);
+    }
 
     /**
      * @param array $data
