@@ -16,7 +16,7 @@ import CardHeader from '../Card/CardHeader';
 CommentsSection
 
 function StoneDetails({ stone }) {
-    const [activeTab, setActiveTab] = useState('info');
+    const [activeTab, setActiveTab] = useState('comments');
 
     const { auth } = usePage().props;
     const likesCount = useMemo(() => stone.likes.length, [stone.likes]);
@@ -65,15 +65,13 @@ function StoneDetails({ stone }) {
 
     // Tabs
     const tabs = [
-        { value: 'info', label: 'Stone Info' },
-        { value: 'map', label: 'Map' },
         { value: 'comments', label: 'Comments' },
+        { value: 'map', label: 'Map' },
         ...(isOwner ? [{ value: 'actions', label: 'Actions' }] : [])
     ];
 
     const tabContent = {
         map: <MapDisplay center={center} zoom={zoom} stones={[stone]} />,
-        info: <StoneInfo stone={stone} hasAdminAccess={hasAdminAccess} isOwner={isOwner} />,
         comments: <CommentsSection stoneId={stone.id} initialComments={stone.comments} />,
         actions: isOwner ? <StoneActions onDelete={openDeleteModal} onEdit={handleEdit} /> : null
     };
@@ -83,6 +81,7 @@ function StoneDetails({ stone }) {
             <CardHeader stone={stone} />
             <StoneImage stone={stone} />
             <CardFooter icons={icons} />
+            <StoneInfo stone={stone} hasAdminAccess={hasAdminAccess} isOwner={isOwner} />
             <div className="mt-4 ">
 
 

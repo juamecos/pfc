@@ -6,12 +6,16 @@ use App\Http\Requests\StoreCommentRequest;
 
 use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Comment;
+use App\Models\Stone;
 use App\Services\CommentService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 /**
  * Class CommentController
@@ -60,15 +64,39 @@ class CommentController extends BaseController
      * @return  
      */
     // App\Http\Controllers\CommentController.php
-    public function getActiveCommentsByStoneId(Request $request, int $stoneId)
+    public function getActiveCommentsByStoneId(Request $request, $stoneId)
+    {
+        // dd($request);
+        $perPage = $request->input('perPage', 20);
+
+        try {
+            $comments = $this->commentService->getActiveCommentsByStoneId($perPage, $stoneId);
+            return Inertia::render('Comments/ByStone', [
+                'comments' => $comments,
+                'stoneId' => $stoneId,
+
+            ]);
+        } catch (Exception $e) {
+            return Inertia::render('Error', ['message' => $e->getMessage()]);
+        }
+    }
+
+    public function fetchActiveCommentsByStoneId(Request $request, $stoneId)
     {
         $perPage = $request->input('perPage', 20);
 
         try {
             $comments = $this->commentService->getActiveCommentsByStoneId($perPage, $stoneId);
-            return response()->json(['comments' => $comments]);
+            return response()->json([
+                'success' => true,
+                'comments' => $comments,
+                'stoneId' => $stoneId,
+            ]);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
         }
     }
 
@@ -100,13 +128,63 @@ class CommentController extends BaseController
      * @param Comment $comment
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UpdateCommentRequest $request, Comment $comment)
+    public function update(UpdateCommentRequest $request, $commentId): RedirectResponse
     {
+
+
         $data = $request->validated();
+
+        $comment = Comment::findOrFail($commentId);
 
         try {
             $this->service->update($comment, $data);
-            return redirect()->back()->with('success', 'Comment updated successfully!');
+
+
+            return redirect()->route('stones.show', ["stoneId" => strval($comment->stone_id)])->with('success', 'Comment edited successfully!');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified comment from storage.
+     *
+     * @param int $commentId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($commentId)
+    {
+        try {
+            // Buscar el comentario por ID
+            $comment = Comment::findOrFail($commentId);
+
+            // Llamar al método delete en el servicio pasando el modelo de comentario
+            $this->commentService->delete($comment);
+
+            return redirect()->route('stones.show', ["stoneId" => strval($comment->stone_id)])->with('success', 'Comment deleted successfully!');
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Comment not found.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+
+
+    /**
+     * Report a comment to mark it for moderation.
+     *
+     * @param int $id
+     * @return RedirectResponse
+     */
+    public function report($commentId): RedirectResponse
+    {
+        try {
+
+            $comment = Comment::findOrFail($commentId);
+
+            $this->commentService->report($commentId);
+            return redirect()->route('stones.show', ["stoneId" => strval($comment->stone_id)])->with('success', 'Comment reported successfully!');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

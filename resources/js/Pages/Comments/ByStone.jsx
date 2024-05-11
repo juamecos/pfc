@@ -4,8 +4,11 @@ import GuestLayout from "@/Layouts/GuestLayout";
 import { Head } from "@inertiajs/react";
 import CommentList from "@/Components/Comments/CommentList";
 
-export default function ByStone({ comments, stoneId }) {
-    console.log(comments, stoneId);
+export default function ByStone(
+    { comments, stoneId }
+
+) {
+    console.log(comments);
     return (
         <GuestLayout>
             <Head title={`Comments for Stone #${stoneId}`} />

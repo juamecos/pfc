@@ -34,10 +34,22 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/discover', [StoneController::class, 'discover'])->name('stones.discover');
 
+// Route::resource('comments/', CommentController::class);
+
 Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
-Route::put('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+Route::delete('comments/{commentId}', [CommentController::class, 'destroy'])->name('comments.destroy');
+Route::put('comments/{commentId}', [CommentController::class, 'report'])->name('comments.report');
+
+Route::patch('comments/{commentId}', [CommentController::class, 'update'])->name('comments.update');
+
+
+
 Route::get('comments/stone/{stoneId}', [CommentController::class, 'getActiveCommentsByStoneId'])->name('comments.byStone');
-Route::get('comments/stone/{stoneId}/fetch', [CommentController::class, 'getActiveCommentsByStoneId'])->name('comments.byStone.fetch');
+
+
+Route::get('comments/stone/{stoneId}/fetch', [CommentController::class, 'fetchActiveCommentsByStoneId'])->name('comments.byStone.fetch');
+
+Route::put('comments/{commentId}', [CommentController::class, 'report'])->name('comments.report');
 /**
  * Group routes that require user authentication and email verification.
  *

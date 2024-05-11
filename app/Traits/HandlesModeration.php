@@ -19,7 +19,7 @@ trait HandlesModeration
         try {
             $this->increment('report_count');
             $this->update(['moderation_status' => 'pending']);
-            // Optionally log this change
+            // Log log this change
             ModerationLog::create([
                 'moderatable_id' => $this->id,
                 'moderatable_type' => get_class($this),

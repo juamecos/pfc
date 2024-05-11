@@ -2,15 +2,14 @@
 import { useState, useEffect } from 'react';
 import CommentList from '@/Components/Comments/CommentList';
 import CommentBox from '@/Components/Comments/CommentBox';
-import { usePage } from '@inertiajs/react';
-import Pagination from '../Pagination';
+
 
 export default function CommentsSection({ stoneId, initialComments = [] }) {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    const { auth } = usePage().props;
+
 
 
 
@@ -18,39 +17,32 @@ export default function CommentsSection({ stoneId, initialComments = [] }) {
         if (!loaded && !loading) {
             setLoading(true);
             fetch(route('comments.byStone.fetch', { stoneId }))
-                .then((response) => {
+                .then(response => {
                     if (!response.ok) {
                         throw new Error(`Error fetching comments: ${response.statusText}`);
                     }
                     return response.json();
                 })
-                .then((data) => {
-                    if (data.comments && data.comments.data) {
-                        setComments(data.comments.data);
-                        setData(data.comments);
+                .then(data => {
+                    if (data && data.comments) {
+                        setComments(data.comments.data || []);
+                        setLoaded(true);
                     }
-                    setLoading(false);
-                    setLoaded(true);
                 })
-                .catch(() => {
+                .catch(error => {
+                    console.error('Failed to load comments:', error);
+                    setError(error.message);
+                })
+                .finally(() => {
                     setLoading(false);
                 });
         }
-    }, [loaded, loading, stoneId]);
-
-    const handleCommentSubmit = (newComment) => {
-        setComments([newComment, ...comments]);
-    };
-
-    if (loaded && data && !loading) {
-        console.log(data)
-    }
-
+    }, []);
 
     return (
         <div>
             <h2 className="text-lg font-medium text-gray-900 mb-4">Comments</h2>
-            <CommentBox stoneId={stoneId} onCommentSubmit={handleCommentSubmit} />
+            <CommentBox stoneId={stoneId} />
             {(loading && !comments && !loaded) ? (
                 <p>Loading comments...</p>
             ) : (
@@ -58,10 +50,11 @@ export default function CommentsSection({ stoneId, initialComments = [] }) {
                     <CommentList
                         comments={comments}
                     />
-
                 </>
 
             )}
         </div>
     );
 }
+
+

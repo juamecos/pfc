@@ -18,7 +18,10 @@ export default function Card({ stone }) {
 
     return (
         <div className="max-w-full relative md:max-w-lg lg:max-w-xl border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader stone={stone} />
+            <div className="px-3 py-2">
+                <CardHeader stone={stone} />
+
+            </div>
             <CardImage stone={stone} />
             <CardFooter icons={icons} stone={stone} />
         </div>

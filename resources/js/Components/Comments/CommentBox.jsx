@@ -4,7 +4,7 @@ import { router } from '@inertiajs/react';
 import TextAreaInput from '@/Components/Forms/TextAreaInput';
 import Button from '@/Components/Button';
 
-export default function CommentBox({ stoneId, onCommentSubmit }) {
+export default function CommentBox({ stoneId }) {
     const [content, setContent] = useState('');
     const [error, setError] = useState('');
 
@@ -21,8 +21,6 @@ export default function CommentBox({ stoneId, onCommentSubmit }) {
             { stone_id: stoneId, content },
             {
                 onSuccess: (page) => {
-                    const newComment = page.props.newComment;
-                    onCommentSubmit(newComment);
                     setContent('');
                 },
                 onError: (errors) => {

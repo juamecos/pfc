@@ -65,20 +65,22 @@ class CommentService extends BaseService
         return $this->handleOperations(fn() => $this->$commentRepository->filteredPagination($perPage, ['moderation_status' => $status]), __METHOD__);
     }
 
-    // /**
-    //  * Reports a comment increasing its report count and setting its status to pending.
-    //  * 
-    //  * @param int $commentId
-    //  * @return mixed
-    //  */
-    // public function reportComment($commentId)
-    // {
-    //     $comment = $this->$commentRepository->find($commentId);
-    //     if ($comment) {
-    //         return $this->handleOperations(fn() => $comment->report(), __METHOD__);
-    //     }
-    //     throw new \Exception("Comment not found with ID: $commentId");
-    // }
+    /**
+     * Reports a comment increasing its report count and setting its status to pending.
+     * 
+     * @param int $commentId
+     * @return mixed
+     */
+    public function report($commentId)
+    {
+        $comment = $this->commentRepository->find($commentId);
+        if ($comment) {
+            return $this->handleOperations(fn() => $comment->report(), __METHOD__);
+        }
+        throw new \Exception("Comment not found with ID: $commentId");
+    }
+
+
 
     // /**
     //  * Moderates a comment based on action and reason.
