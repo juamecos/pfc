@@ -15,15 +15,16 @@ const stoneMarkerIcon = new L.Icon({
 
 export default function MapDisplay({ center, zoom = 1, heightProportion = 0.4, stones }) {
     return (
-        <MapBase center={center} zoom={zoom} heightProportion={heightProportion}>
-            {stones.map((stone) => (
-
-                <Marker
-                    key={stone.id}
-                    position={[stone.latitude, stone.longitude]}
-                    icon={stoneMarkerIcon}
-                />
-            ))}
-        </MapBase>
+        <div id="map-section">
+            <MapBase center={center} zoom={zoom} heightProportion={heightProportion}>
+                {stones.map((stone) => (
+                    <Marker
+                        key={stone.id}
+                        position={[stone.latitude, stone.longitude]}
+                        icon={stoneMarkerIcon}
+                    />
+                ))}
+            </MapBase>
+        </div>
     );
 }

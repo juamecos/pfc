@@ -21,6 +21,8 @@ class LikeService extends BaseService
 
     public function toggleLike($user_id, $stone_id)
     {
+
+
         $like = $this->likeRepository->findByUserAndStone($user_id, $stone_id);
 
         if ($like) {
@@ -28,7 +30,6 @@ class LikeService extends BaseService
             if ($like->user_id == $user_id) {
                 return $this->likeRepository->delete($like);
             }
-
         } else {
             return $this->likeRepository->create([
                 'user_id' => $user_id,

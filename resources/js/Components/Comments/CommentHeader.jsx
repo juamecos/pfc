@@ -2,7 +2,7 @@
 import UserHeader from '@/Components/UserHeader';
 import { router } from '@inertiajs/react';
 import Swal from 'sweetalert2'
-
+import { deleteEntity, reportEntity, editEntity } from '@/lib/interactionHandlers';
 
 /**
  * CommentHeader component to display the header of a comment.
@@ -12,6 +12,8 @@ import Swal from 'sweetalert2'
  */
 export default function CommentHeader({ comment }) {
     const { user, id, content } = comment;
+
+
 
     const handleSuccess = (message, title = 'Success') => {
         Swal.fire(title, message, 'success').then(() => {
@@ -35,6 +37,8 @@ export default function CommentHeader({ comment }) {
         }).then((result) => {
             if (result.isConfirmed) {
                 router.delete(route('comments.destroy', { id }), {
+                    preserveScroll: true,
+                    preserveState: false,
                     onSuccess: () => handleSuccess('Your comment has been deleted.'),
                     onError: () => handleError('There was an error deleting your comment.')
                 });
@@ -80,7 +84,10 @@ export default function CommentHeader({ comment }) {
             if (result.isConfirmed && result.value) {
                 router.patch(route('comments.update', comment.id), result.value, {
                     onSuccess: () => handleSuccess('Comment updated successfully'),
-                    onError: () => handleError('Failed to update comment')
+                    onError: () => handleError('Failed to update comment'),
+                    preserveScroll: true,
+                    preserveState: false,
+
                 });
             }
         });

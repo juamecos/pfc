@@ -7,6 +7,7 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import RootErrorBoundary from './ErrorBoundaries/RootErrorBoundary';
 import Loader from '@/Components/Loader';
+import { TabProvider } from '@/context/TabContext';
 
 
 import 'leaflet/dist/leaflet.css';
@@ -21,11 +22,11 @@ createInertiaApp({
         hydrateRoot(el,
             <StrictMode>
                 <Suspense fallback={<Loader />}>
-
-                    <RootErrorBoundary>
-                        <App {...props} />
-                    </RootErrorBoundary>
-
+                    <TabProvider initialTab="map">
+                        <RootErrorBoundary>
+                            <App {...props} />
+                        </RootErrorBoundary>
+                    </TabProvider>
                 </Suspense >
             </StrictMode>
         )

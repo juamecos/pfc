@@ -3,13 +3,21 @@ import { useState } from 'react';
 import { router } from '@inertiajs/react';
 import TextAreaInput from '@/Components/Forms/TextAreaInput';
 import Button from '@/Components/Button';
+import { usePermissionHandler } from '@/hooks/usePermissionHandler';
+import inertiaManualVisit from '@/lib/inertiaManualVisit';
 
 export default function CommentBox({ stoneId }) {
     const [content, setContent] = useState('');
     const [error, setError] = useState('');
+    const { isLoggedIn } = usePermissionHandler();
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!isLoggedIn()) {
+            return;
+        }
+
         if (!content.trim()) {
             setError('Content is required');
             return;
@@ -25,7 +33,16 @@ export default function CommentBox({ stoneId }) {
                 },
                 onError: (errors) => {
                     setError(errors.content || 'An error occurred');
-                }
+                },
+                preserveScroll: true,
+                onFinish: () => {
+                    inertiaManualVisit(
+                        route('stones.show', stoneId),
+                        'get',
+                        {},
+                        false
+                    )
+                },
             }
         );
     };

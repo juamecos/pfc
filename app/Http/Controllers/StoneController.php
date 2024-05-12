@@ -217,4 +217,15 @@ class StoneController extends BaseController
         $stone->delete();
         return Redirect::route('stone.index');
     }
+
+    public function report(Request $request, $stoneId)
+    {
+        try {
+            $this->stoneService->reportStone($stoneId);
+            return redirect()->back()->with('success', 'Comment reported successfully!');
+
+        } catch (Exception $e) {
+            return Inertia::render('Error', ['message' => $e->getMessage()]);
+        }
+    }
 }

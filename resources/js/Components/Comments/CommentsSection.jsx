@@ -7,7 +7,6 @@ import CommentBox from '@/Components/Comments/CommentBox';
 export default function CommentsSection({ stoneId, initialComments = [] }) {
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
 
@@ -40,7 +39,7 @@ export default function CommentsSection({ stoneId, initialComments = [] }) {
     }, []);
 
     return (
-        <div>
+        <div id="comments-section">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Comments</h2>
             <CommentBox stoneId={stoneId} />
             {(loading && !comments && !loaded) ? (

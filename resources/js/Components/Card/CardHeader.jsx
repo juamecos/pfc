@@ -1,6 +1,6 @@
 // Components/Card/CardHeader.jsx
 import UserHeader from '@/Components/UserHeader';
-
+import { deleteEntity, reportEntity, editEntity } from '@/lib/interactionHandlers';
 /**
  * CardHeader component to display the header of a stone card.
  * @param {Object} props - Component props.
@@ -14,9 +14,9 @@ export default function CardHeader({ stone }) {
         <UserHeader
             user={user}
             data={stone}
-            onRemove={() => console.log('Removing stone')}
-            onEdit={() => console.log('Editing stone')}
-            onReport={() => console.log('Reporting stone')}
+            onRemove={() => deleteEntity('stone', stone.id)}
+            onEdit={() => editEntity('stone', stone)}
+            onReport={() => reportEntity('stone', stone.id)}
         />
     );
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoneController;
 use Illuminate\Foundation\Application;
@@ -21,8 +22,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/', [StoneController::class, 'index']);
-Route::get('/stones/{stone}', [StoneController::class, 'show'])->name('stones.show');
+
 Route::resource('/stone', StoneController::class);
+Route::get('/stones/{stone}', [StoneController::class, 'show'])->name('stones.show');
+Route::put('stones/{stoneId}', [StoneController::class, 'report'])->name('stone.report');
 
 
 
@@ -42,14 +45,14 @@ Route::put('comments/{commentId}', [CommentController::class, 'report'])->name('
 
 Route::patch('comments/{commentId}', [CommentController::class, 'update'])->name('comments.update');
 
-
-
 Route::get('comments/stone/{stoneId}', [CommentController::class, 'getActiveCommentsByStoneId'])->name('comments.byStone');
 
 
 Route::get('comments/stone/{stoneId}/fetch', [CommentController::class, 'fetchActiveCommentsByStoneId'])->name('comments.byStone.fetch');
 
-Route::put('comments/{commentId}', [CommentController::class, 'report'])->name('comments.report');
+
+Route::post('/likes/toggle', [LikeController::class, 'toggle'])->name('likes.toggle');
+
 /**
  * Group routes that require user authentication and email verification.
  *

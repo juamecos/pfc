@@ -1,40 +1,10 @@
-// Components/Dropdown/SettingsDropdown.jsx
 import React, { useState } from 'react';
+import Swal from 'sweetalert2';
 import DropdownMenu from './DropdownMenu';
 import DropdownMenuItem from './DropdownMenuItem';
 import SettingsDropdownButton from '@/Components/IconButtons/SettingsDropdownButton';
-import { usePage } from '@inertiajs/react';
+import { usePage, router } from '@inertiajs/react';
 
-/**
- * SettingsDropdown component that displays a dropdown menu for editing, removing, or reporting an item.
- *
- * @param {Object} props Component props
- * @param {Object} [props.stone=null] Stone object for the settings dropdown
- * @param {Object} [props.comment=null] Comment object for the settings dropdown
- * @param {Function} [props.onRemove] Function called when the "Remove" option is clicked
- * @param {Function} [props.onEdit] Function called when the "Edit" option is clicked
- * @param {Function} [props.onReport] Function called when the "Report" option is clicked
- * 
- * @example
- * // Usage for stone
- * <SettingsDropdown
- *     stone={stone}
- *     onRemove={() => console.log('Removing stone')}
- *     onEdit={() => console.log('Editing stone')}
- *     onReport={() => console.log('Reporting stone')}
- * />
- * 
- * @example
- * // Usage for comment
- * <SettingsDropdown
- *     comment={comment}
- *     onRemove={() => console.log('Removing comment')}
- *     onEdit={() => console.log('Editing comment')}
- *     onReport={() => console.log('Reporting comment')}
- * />
- * 
- * @returns {JSX.Element} The rendered SettingsDropdown component
- */
 const SettingsDropdown = ({ stone = null, comment = null, onRemove, onEdit, onReport }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { auth } = usePage().props;
@@ -47,19 +17,40 @@ const SettingsDropdown = ({ stone = null, comment = null, onRemove, onEdit, onRe
     const canEdit = isOwner;
     const canRemove = hasModeratorRole || isOwner;
 
-    const handleEdit = () => {
-        onEdit && onEdit();
-        closeDropdown();
-    };
-
-    const handleRemove = () => {
-        onRemove && onRemove();
-        closeDropdown();
-    };
-
-    const handleReport = () => {
-        onReport && onReport();
-        closeDropdown();
+    const handleAction = (action) => {
+        if (!auth.user) {
+            Swal.fire({
+                title: 'Need to Login',
+                text: 'You need to be logged in to perform this action.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    router.visit('/login');
+                }
+            });
+        } else if (action === 'edit' && !canEdit) {
+            Swal.fire('Permission Denied', 'You need to be the owner to edit this item.', 'error');
+        } else if (action === 'remove' && !canRemove) {
+            Swal.fire('Permission Denied', 'You need to be the owner or a moderator/admin to delete this item.', 'error');
+        } else {
+            switch (action) {
+                case 'edit':
+                    onEdit && onEdit();
+                    break;
+                case 'remove':
+                    onRemove && onRemove();
+                    break;
+                case 'report':
+                    onReport && onReport();
+                    break;
+                default:
+                    console.log('Action not supported');
+            }
+            closeDropdown();
+        }
     };
 
     return (
@@ -67,16 +58,16 @@ const SettingsDropdown = ({ stone = null, comment = null, onRemove, onEdit, onRe
             <SettingsDropdownButton onClick={toggleDropdown} />
             <DropdownMenu isOpen={dropdownOpen} onClose={closeDropdown}>
                 {canEdit && (
-                    <DropdownMenuItem onClick={handleEdit}>
+                    <DropdownMenuItem onClick={() => handleAction('edit')}>
                         Edit
                     </DropdownMenuItem>
                 )}
                 {canRemove && (
-                    <DropdownMenuItem onClick={handleRemove}>
+                    <DropdownMenuItem onClick={() => handleAction('remove')}>
                         Remove
                     </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={handleReport}>
+                <DropdownMenuItem onClick={() => handleAction('report')}>
                     Report
                 </DropdownMenuItem>
             </DropdownMenu>
