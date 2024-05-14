@@ -1,11 +1,15 @@
 // Discover.js
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { usePage, Head } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import CustomMap from '@/Components/Map/CustomMap';
 import useGeolocation from '@/hooks/useGeolocation';
 import inertiaManualVisit from '@/lib/inertiaManualVisit';
 import useMapCoordinates from '@/hooks/useMapCoordinates';
+import Icon from '@/Components/Icon';
+import { eyeOutline } from 'ionicons/icons';
+import FoundButton from '@/Components/FoundButton';
+
 
 export default function Discover() {
     const { stones } = usePage().props;
@@ -16,28 +20,35 @@ export default function Discover() {
 
     useEffect(() => {
         fetchLocationData();
-    }, [fetchLocationData]);
+    }, []);
 
     useEffect(() => {
         if (locationData?.latitude && locationData?.longitude) {
             setCenter([locationData.latitude, locationData.longitude]);
         }
-    }, [locationData, setCenter]);
+    }, [locationData]);
 
-    const handleAreaUpdate = (newNE, newSW) => {
-        handleAreaChange(newNE, newSW);
-        inertiaManualVisit('/discover', 'get', {
-            northEast: newNE,
-            southWest: newSW
-        });
-    };
+    const debounceRef = useRef(null);
+
+    const handleAreaUpdate = useCallback((newNE, newSW) => {
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
+        }
+        debounceRef.current = setTimeout(() => {
+            handleAreaChange(newNE, newSW);
+            inertiaManualVisit('/discover', 'get', {
+                northEast: newNE,
+                southWest: newSW
+            });
+        }, 1000); // Debounce time is set to 1 second
+    }, [handleAreaChange]);
 
     return (
         <GuestLayout>
             <Head title="Discover Stones" />
             <div className="container mx-auto mt-3 bg-white text-center">
                 <h1 className="text-4xl font-bold mb-4">Discover Stones</h1>
-                <div className="flex-grow">
+                <div className="relative flex-grow overflow-hidden">
                     <CustomMap
                         center={center}
                         zoom={zoom}
@@ -46,6 +57,7 @@ export default function Discover() {
                         onAreaChange={handleAreaUpdate}
                         stones={stones}
                     />
+                    <FoundButton />
                 </div>
             </div>
         </GuestLayout>

@@ -9,14 +9,15 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 class FoundService extends BaseService
 {
 
-    protected $repository;
+    protected $foundRepository;
+
     /**
-     * FoundService constructor.
-     * @param FoundRepository $repository
+     * foundService constructor.
+     * @param FoundRepository $foundRepository
      */
-    public function __construct(FoundRepository $repository)
+    public function __construct(FoundRepository $foundRepository)
     {
-        parent::__construct($repository);
+        parent::__construct($foundRepository);
     }
 
     /**

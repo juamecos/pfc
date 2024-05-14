@@ -225,6 +225,15 @@ class StoneService extends BaseService
         return true;
     }
 
+    public function findStoneByCode(string $code)
+    {
+        try {
+            return $this->stoneRepository->findStoneByCode($code);
+        } catch (Exception $e) {
+            throw new Exception("Failed to find stone with code {$code}: " . $e->getMessage());
+        }
+    }
+
     /**
      * Retrieves stones ordered by proximity to a specified geographic point,
      * ensuring the latitude and longitude are valid and within correct ranges.

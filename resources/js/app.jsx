@@ -22,10 +22,13 @@ createInertiaApp({
         hydrateRoot(el,
             <StrictMode>
                 <Suspense fallback={<Loader />}>
+
                     <TabProvider initialTab="map">
+
                         <RootErrorBoundary>
                             <App {...props} />
                         </RootErrorBoundary>
+
                     </TabProvider>
                 </Suspense >
             </StrictMode>

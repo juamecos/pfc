@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FoundController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoneController;
@@ -27,6 +28,7 @@ Route::resource('/stone', StoneController::class);
 Route::get('/stones/{stone}', [StoneController::class, 'show'])->name('stones.show');
 Route::put('stones/{stoneId}', [StoneController::class, 'report'])->name('stone.report');
 
+Route::get('stone/check/{code}', [StoneController::class, 'findStoneByCode'])->name('stone.check');
 
 
 Route::middleware('auth')->group(function () {
@@ -37,7 +39,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/discover', [StoneController::class, 'discover'])->name('stones.discover');
 
-// Route::resource('comments/', CommentController::class);
+
 
 Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
 Route::delete('comments/{commentId}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -52,6 +54,11 @@ Route::get('comments/stone/{stoneId}/fetch', [CommentController::class, 'fetchAc
 
 
 Route::post('/likes/toggle', [LikeController::class, 'toggle'])->name('likes.toggle');
+
+Route::get('/founds/create', [FoundController::class, 'create'])->name('founds.create');
+Route::post('/founds/create', [FoundController::class, 'create'])->name('founds.create');
+
+Route::post('/founds/store', [FoundController::class, 'store'])->name('found.store');
 
 /**
  * Group routes that require user authentication and email verification.

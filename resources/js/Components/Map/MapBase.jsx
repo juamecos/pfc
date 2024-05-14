@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 
-export default function MapBase({ children, center, zoom = 1, minZoom = 2, maxZoom = 18, heightProportion = 0.8 }) {
+export default function MapBase({ children, center, zoom = 1, minZoom = 2, maxZoom = 16, heightProportion = 0.8 }) {
     const [dynamicHeight, setDynamicHeight] = useState(calculateDynamicHeightInRem(heightProportion));
 
     useEffect(() => {
@@ -16,8 +16,8 @@ export default function MapBase({ children, center, zoom = 1, minZoom = 2, maxZo
     }, [heightProportion]);
 
     const maxBounds = [
-        [85, -179.99], // Top left corner (latitude, longitude)
-        [-85, 179.99] // Bottom right corner (latitude, longitude)
+        [85, -175], // Top left corner (latitude, longitude)
+        [-85, 175] // Bottom right corner (latitude, longitude)
     ];
 
     return (

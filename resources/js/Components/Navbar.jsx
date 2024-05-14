@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
 
+import { Link } from '@inertiajs/react';
+import { navigationLinks } from '@/config/navigation';
+
 export default function Navbar() {
     // State to track the active link
     const [activeLink, setActiveLink] = useState('Home');
@@ -23,25 +26,15 @@ export default function Navbar() {
         <nav>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6">
                 <Logo />
-
-
                 <div className="w-full md:block md:w-auto" id="navbar-solid-bg">
                     <ul className="flex hidden text-lg font-medium mt-4 rounded-lg bg-gray-50 md:flex md:flex-row md:mt-0 md:space-x-8 rtl:md:space-x-reverse md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
-                        <li>
-                            <a href="#" className={getLinkClass('Home')} onClick={() => handleSetActiveLink('Home')}>Home</a>
-                        </li>
-                        <li>
-                            <a href="#" className={getLinkClass('Discover')} onClick={() => handleSetActiveLink('Discover')}>Discover</a>
-                        </li>
-                        <li>
-                            <a href="#" className={getLinkClass('Add')} onClick={() => handleSetActiveLink('Add')}>Add</a>
-                        </li>
-                        <li>
-                            <a href="#" className={getLinkClass('Settings')} onClick={() => handleSetActiveLink('Settings')}>Settings</a>
-                        </li>
-                        <li>
-                            <a href="#" className={getLinkClass('Profile')} onClick={() => handleSetActiveLink('Contact')}>Profile</a>
-                        </li>
+                        {navigationLinks.map(({ id, label, href }) => (
+                            <li key={id}>
+                                <Link href={href} className={getLinkClass(id)} onClick={() => setActiveLink(id)}>
+                                    {label}
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>

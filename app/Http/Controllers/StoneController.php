@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CheckStoneCodeRequest;
 use App\Models\Stone;
 use App\Http\Requests\StoreStoneRequest;
 use App\Http\Requests\UpdateStoneRequest;
 use App\Services\StoneService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -168,6 +170,31 @@ class StoneController extends BaseController
 
         return redirect()->route('stone.index')->with('success', 'Stone created successfully!');
     }
+
+    public function findStoneByCode(Request $request, string $code): JsonResponse
+    {
+
+
+
+        // Use the code to retrieve a stone
+        $stone = $this->stoneService->findStoneByCode($code);
+        if (!$stone) {
+            return response()->json([
+                'message' => 'Stone not found',
+                'code' => $code,
+                'success' => false
+            ], 404); // Stone not found
+        }
+
+        // If stone is found, return it with the code
+        return response()->json([
+            'message' => 'Stone found',
+            'code' => $code,
+            'stone' => $stone,
+            'success' => true
+        ], 200); // OK
+    }
+
 
     /**
      * Display the specified stone.

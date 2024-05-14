@@ -70,7 +70,10 @@ class StoneRepository extends BaseRepository
             ->appends(['filter' => 'Newest']);
     }
 
-
+    public function findStoneByCode(string $code)
+    {
+        return Stone::where('code', $code)->first();
+    }
 
     /**
      * Retrieves stones ordered by proximity to a specified geographic point.
