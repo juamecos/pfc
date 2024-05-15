@@ -1,7 +1,7 @@
 // LabeledTextInput.js
 import InputLabel from './InputLabel';
 import TextInput from './TextInput';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/Forms/InputError';
 import { forwardRef } from 'react';
 
 /**

@@ -5,7 +5,7 @@ import { ProfileHeader } from '@/Components/User/ProfileHeader';
 import CustomText from '@/Components/CustomText';
 import formatDate from '@/lib/formateDate';
 import UserStats from '@/Components/User/UserStats';
-import UserStones from './UseStones';
+import UserStones from './UserStones';
 
 
 const UserDetails = ({ user }) => {

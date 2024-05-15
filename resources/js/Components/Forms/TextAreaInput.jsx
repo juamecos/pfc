@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef } from 'react';
 import InputLabel from '@/Components/Forms/InputLabel';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/Forms/InputError';
 
 /**
  * A custom React component for rendering a text area field with a label.

@@ -1,7 +1,7 @@
 // Components/Forms/StoneImageInput.js
 import React, { useEffect, useRef, useState } from 'react';
 import InputLabel from '@/Components/Forms/InputLabel';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/Forms/InputError';
 import Icon from '@/Components/Icon';
 import { imageOutline } from 'ionicons/icons';
 

@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import ClickableMarker from '@/Components/Map/ClickableMarker';
 import MapBase from '@/Components/Map/MapBase';
 import InputLabel from '@/Components/Forms/InputLabel';
-import InputError from '@/Components/InputError';
+import InputError from '@/Components/Forms/InputError';
 import useGeolocation from '@/hooks/useGeolocation';
 
 
