@@ -6,6 +6,7 @@ import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 import TextAreaInput from '@/Components/Forms/TextAreaInput';
 import InputError from '@/Components/Forms/InputError';
+import AvatarInput from '@/Components/Forms/AvatarInput';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
     const user = usePage().props.auth.user;
@@ -17,6 +18,11 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
         bio: user.bio,
         country: user.country,
     });
+
+    // Handle the avatar upload and update the avatar URL in the form data
+    const handleAvatarUpload = (url) => {
+        setData('avatar', url);
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -71,13 +77,11 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
 
                 <div>
                     <InputLabel htmlFor="avatar" value="Avatar URL" />
-                    <TextInput
-                        id="avatar"
-                        type="text"
-                        className="mt-1 block w-full"
-                        value={data.avatar}
-                        onChange={(e) => setData('avatar', e.target.value)}
-                        autoComplete="url"
+                    <AvatarInput
+                        label="Profile Avatar"
+                        onUpload={handleAvatarUpload}
+                        initialImage={data.avatar}
+                        error={errors.avatar}
                     />
                     <InputError message={errors.avatar} />
                 </div>
