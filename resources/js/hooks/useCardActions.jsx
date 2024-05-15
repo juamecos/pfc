@@ -7,6 +7,7 @@ import scrollToSection from '@/lib/scrollToSection';
 
 // Hook to manage card actions
 const useCardActions = (stone, isAuthenticated) => {
+    const { auth } = usePage().props;
     const { id } = stone;
     const { switchTab } = useTabContext();
 

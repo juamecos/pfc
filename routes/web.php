@@ -5,6 +5,7 @@ use App\Http\Controllers\FoundController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StoneController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,27 +61,14 @@ Route::post('/founds/create', [FoundController::class, 'create'])->name('founds.
 
 Route::post('/founds/store', [FoundController::class, 'store'])->name('found.store');
 
-/**
- * Group routes that require user authentication and email verification.
- *
- * This routing group ensures that all included routes are only accessible to users who are authenticated
- * and have verified their email addresses. It applies these constraints to three resource controllers,
- * handling CRUD operations for likes, comments, and found items. Each resource controller is mapped to 
- * standard CRUD operations according to Laravel's resource routing conventions.
- *
- * @see \App\Http\Controllers\LikeController Handles CRUD operations for likes
- * @see \App\Http\Controllers\CommentController Handles CRUD operations for comments
- * @see \App\Http\Controllers\FoundController Handles CRUD operations for found items
- * @middleware auth Ensures the user is authenticated before accessing these routes
- * @middleware verified Ensures the user has a verified email before accessing these routes
- */
-// Route::middleware(['auth','verified'])->group(function () {
-//     Route::post('stone/create', fn() => Inertia::render('Stone/Create'))->name('create');
-//     Route::put('stone/{stone}/edit', fn($stone) => Inertia::render('Stone/Edit', ['stoneId' => $stone]))->name('stone.update');
-//     Route::delete('stone/{stone}', [StoneController::class, 'destroy'])->name('stone.delete');
-//     Route::resource('like', LikeController::class);
-//     Route::resource('comment', CommentController::class);
-//     Route::resource('found', FoundController::class);
-// });
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::get('create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/', [UserController::class, 'store'])->name('users.store');
+    Route::get('{id}', [UserController::class, 'show'])->name('users.show');
+    Route::get('{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('{id}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 require __DIR__ . '/auth.php';

@@ -1,7 +1,7 @@
 // Components/Stone/StoneForm.jsx
 import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import LabeledTextInput from '@/Components/Forms/LabeledTextInput';
-import InputError from '@/Components/Forms/InputError';
+import InputError from '@/Components/InputError';
 import MapLocationInput from '@/Components/Forms/MapLocationInput';
 import useGeolocation from '@/hooks/useGeolocation';
 import useMapCoordinates from '@/hooks/useMapCoordinates';

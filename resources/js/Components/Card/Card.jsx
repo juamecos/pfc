@@ -4,12 +4,13 @@ import CardFooter from "./CardFooter";
 
 export default function Card({ stone }) {
     return (
-        <div className="max-w-full relative md:max-w-lg lg:max-w-xl border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+        <div className="flex flex-col max-w-full md:max-w-lg lg:max-w-xl border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <div className="px-3 py-2">
                 <CardHeader stone={stone} />
-
             </div>
-            <CardImage stone={stone} />
+            <div className="flex-grow">
+                <CardImage stone={stone} />
+            </div>
             <CardFooter stone={stone} />
         </div>
     );

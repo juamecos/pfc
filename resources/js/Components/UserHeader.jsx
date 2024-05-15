@@ -3,7 +3,7 @@ import Avatar from '@/Components/Avatar';
 import CustomText from '@/Components/CustomText';
 import FormattedTime from '@/Components/FormatedTime';
 import SettingsDropdown from '@/Components/DropDown/SettingsDropdown';
-import { usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 
 /**
  * UserHeader component to display a user's avatar, name, and creation date with a settings dropdown.
@@ -33,18 +33,18 @@ const UserHeader = ({
     showDropdown = true,
     size = 'md'
 }) => {
-    const { avatar, name, created_at } = data.user;
+    const { id, avatar, name, created_at } = data.user;
 
 
     return (
         <header className="flex justify-between items-center mb-2">
-            <div className="flex items-center space-x-2">
+            <Link href={route('users.show', id)} className="flex items-center space-x-2">
                 <Avatar src={avatar} alt={`Avatar from ${name}`} rounded size={size} />
                 <div className="flex flex-col flex-grow">
                     <CustomText p title={name} />
                     <FormattedTime dateTime={created_at} />
                 </div>
-            </div>
+            </Link>
             {showDropdown && (
                 <SettingsDropdown
                     stone={data ? data : null}

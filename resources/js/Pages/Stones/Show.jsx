@@ -10,12 +10,7 @@ export default function Show({ stone }) {
     return (
         <GuestLayout>
             <Head title="Lagisgame" />
-
             <StoneDetails stone={stone} />
-
-
-
-
         </GuestLayout>
     )
 }

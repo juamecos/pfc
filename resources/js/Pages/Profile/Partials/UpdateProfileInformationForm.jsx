@@ -1,9 +1,11 @@
-import InputError from '@/Components/Forms/InputError';
+
 import InputLabel from '@/Components/Forms/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/Forms/TextInput';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
+import TextAreaInput from '@/Components/Forms/TextAreaInput';
+import InputError from '@/Components/InputError';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
     const user = usePage().props.auth.user;
@@ -11,6 +13,9 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
         email: user.email,
+        avatar: user.avatar,
+        bio: user.bio,
+        country: user.country,
     });
 
     const submit = (e) => {
@@ -60,6 +65,47 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                     />
 
                     <InputError className="mt-2" message={errors.email} />
+                </div>
+
+
+
+                <div>
+                    <InputLabel htmlFor="avatar" value="Avatar URL" />
+                    <TextInput
+                        id="avatar"
+                        type="text"
+                        className="mt-1 block w-full"
+                        value={data.avatar}
+                        onChange={(e) => setData('avatar', e.target.value)}
+                        autoComplete="url"
+                    />
+                    <InputError message={errors.avatar} />
+                </div>
+
+                <div>
+                    <TextAreaInput
+                        id="bio"
+                        name="bio"
+                        value={data.bio}
+                        onChange={(e) => setData('bio', e.target.value)}
+                        placeholder="Describe yourself here..."
+                        label="Bio"
+                        rows={4}
+                        error={errors.bio}
+                    />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="country" value="Country" />
+                    <TextInput
+                        id="country"
+                        type="text"
+                        className="mt-1 block w-full"
+                        value={data.country}
+                        onChange={(e) => setData('country', e.target.value)}
+                        autoComplete="country-name"
+                    />
+                    <InputError message={errors.country} />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (

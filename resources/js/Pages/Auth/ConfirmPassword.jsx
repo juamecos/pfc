@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/Forms/InputError';
+import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/Forms/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/Forms/TextInput';

@@ -54,7 +54,6 @@ export default function MapDisplay({ center, zoom = 1, heightProportion = 0.4, s
                                     icon={foundMarkerIcon}
                                 >
                                     <Tooltip>
-                                        Found by {found.user?.name || 'Unknown'}<br />
                                         Found Date: {formatDate(found.created_at)}
                                     </Tooltip>
                                 </Marker>
