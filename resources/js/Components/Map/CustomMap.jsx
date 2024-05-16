@@ -33,7 +33,6 @@ function calculateDynamicHeightInRem() {
 
 export default function CustomMap({ center, zoom = 1, northEast, southWest, onAreaChange, stones }) {
     const [dynamicHeight, setDynamicHeight] = useState(calculateDynamicHeightInRem());
-    console.log(stones);
     useEffect(() => {
         const handleResize = () => {
             setDynamicHeight(calculateDynamicHeightInRem());

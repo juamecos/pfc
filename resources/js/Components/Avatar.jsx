@@ -34,8 +34,8 @@ const Avatar = ({
   if (!src) {
     // Placeholder logic, add a suitable placeholder if src is not provided
     return (
-      <div className={`${selectedSizeClass} ${shapeClass} bg-gray-300 flex items-center justify-center`} {...rest}>
-        <span className="text-xl text-white">?</span> {/* Placeholder icon */}
+      <div className={`${selectedSizeClass} ${shapeClass} bg-blue-700 flex items-center justify-center`} {...rest}>
+        <span className="text-2xl text-white">?</span> {/* Placeholder icon */}
       </div>
     );
   }

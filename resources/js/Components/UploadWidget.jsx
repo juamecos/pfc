@@ -5,7 +5,6 @@ export default function UploadWidget() {
     const widgetRef = useRef();
 
     useEffect(() => {
-        console.log(window.cloudinary);
         cloudinaryRef.current = window.cloudinary;
         widgetRef.current = cloudinaryRef.current.createUploadWidget({
             cloudName: 'lapisgame',

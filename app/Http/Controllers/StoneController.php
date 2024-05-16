@@ -162,13 +162,12 @@ class StoneController extends BaseController
      */
     public function store(StoreStoneRequest $request): RedirectResponse
     {
-
         $validatedData = $request->validated();
+        $stone = $this->stoneService->createStone($validatedData);
 
-
-        $this->stoneService->createStone($validatedData);
-
-        return redirect()->route('stone.index')->with('success', 'Stone created successfully!');
+        return redirect()->route('stones.show', $stone->id)->with([
+            'message' => 'Stone created successfully!'
+        ]);
     }
 
     public function findStoneByCode(Request $request, string $code): JsonResponse

@@ -68,7 +68,6 @@ export default function Gallery({ stones }) {
 
     const handleTagSelect = async (tag) => {
         setSelectedTag(tag);
-        console.log('handleTagSelect', tag);
 
         if (tag === 'Newest') {
             await visitNewest();
@@ -95,12 +94,9 @@ export default function Gallery({ stones }) {
             <Grid stones={stones} />
             <div className="flex justify-center mt-8 mb-4">
                 <Pagination
-                    currentPage={stones.current_page}
-                    totalPages={stones.last_page}
+
                     links={stones.links}
-                    prevPage={stones.prev_page_url}
-                    nextPage={stones.next_page_url}
-                    onPageChange={(newPage) => console.log('Change to page', newPage)}
+
                 />
             </div>
             <Footer />

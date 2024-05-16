@@ -25,7 +25,6 @@ const foundMarkerIcon = new L.Icon({
 });
 
 export default function MapDisplay({ center, zoom = 1, heightProportion = 0.4, stones }) {
-    console.log(stones);
     return (
         <div id="map-section">
             <MapBase center={center} zoom={zoom} heightProportion={heightProportion}>

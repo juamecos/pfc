@@ -36,7 +36,6 @@ const MapLocationInput = ({
     }, []);
 
     useEffect(() => {
-        console.log(locationData);
         onLocationChange(locationData);
     }, [locationData]);
 

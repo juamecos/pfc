@@ -1,4 +1,4 @@
-
+import Swal from 'sweetalert2';
 import InputLabel from '@/Components/Forms/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/Forms/TextInput';
@@ -7,9 +7,11 @@ import { Transition } from '@headlessui/react';
 import TextAreaInput from '@/Components/Forms/TextAreaInput';
 import InputError from '@/Components/Forms/InputError';
 import AvatarInput from '@/Components/Forms/AvatarInput';
+import CountrySelect from '@/Components/Forms/CountrySelect';
+import { useEffect } from 'react';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
-    const user = usePage().props.auth.user;
+    const { user, flash } = usePage().props;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
@@ -19,14 +21,26 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
         country: user.country,
     });
 
+    // Mostrar alerta con SweetAlert si hay un mensaje flash
+    useEffect(() => {
+        if (flash.message) {
+            Swal.fire({
+                text: flash.message,
+                timer: 1500,
+                showConfirmButton: false,
+                icon: 'success',
+            });
+        }
+    }, [flash.message]);
+
     // Handle the avatar upload and update the avatar URL in the form data
     const handleAvatarUpload = (url) => {
         setData('avatar', url);
     };
 
+
     const submit = (e) => {
         e.preventDefault();
-
         patch(route('profile.update'));
     };
 
@@ -90,6 +104,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                     <TextAreaInput
                         id="bio"
                         name="bio"
+                        subLabel="Write something about yourself"
                         value={data.bio}
                         onChange={(e) => setData('bio', e.target.value)}
                         placeholder="Describe yourself here..."
@@ -100,16 +115,14 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="country" value="Country" />
-                    <TextInput
-                        id="country"
-                        type="text"
-                        className="mt-1 block w-full"
+                    <InputLabel htmlFor="country" value="Country" subLabel='Select a country' />
+                    <CountrySelect
+                        data={data}
                         value={data.country}
                         onChange={(e) => setData('country', e.target.value)}
-                        autoComplete="country-name"
+                        errors={errors}
                     />
-                    <InputError message={errors.country} />
+                    {errors.country && <InputError message={errors.country} />}
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (

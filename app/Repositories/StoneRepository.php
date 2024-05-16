@@ -24,6 +24,8 @@ class StoneRepository extends BaseRepository
     public function createStone($data)
     {
         $stone = Stone::create($data);
+
+        return $stone;
     }
 
     /**

@@ -47,7 +47,7 @@ const SettingsDropdown = ({ stone = null, comment = null, onRemove, onEdit, onRe
                     onReport && onReport();
                     break;
                 default:
-                    console.log('Action not supported');
+                    Swal.fire('Error', 'Action not supported', 'error');
             }
             closeDropdown();
         }

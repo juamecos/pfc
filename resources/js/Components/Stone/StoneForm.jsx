@@ -162,7 +162,7 @@ export default function StoneForm({ initialData = {} }) {
             {Object.keys(errors).length > 0 && (
 
                 Object.entries(errors).map(([field, message]) => (
-                    console.log(errors)
+                    console.error(errors)
                 ))
 
             )}

@@ -1,5 +1,5 @@
 // Components/Stone/StoneDetails.jsx
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import CustomText from '@/Components/CustomText';
 import StoneImage from '@/Components/Stone/StoneImage';
 import CardFooter from '@/Components/Card/CardFooter';
@@ -12,11 +12,24 @@ import CommentsSection from '../Comments/CommentsSection';
 import StoneInfo from './StoneInfo';
 import CardHeader from '../Card/CardHeader';
 import { useTabContext } from '@/context/TabContext';
+import Swal from 'sweetalert2';
 
 function StoneDetails({ stone }) {
     const { activeTab, switchTab } = useTabContext();
+    const { auth, flash } = usePage().props;
+    const [alertShown, setAlertShown] = useState(false);
 
-    const { auth } = usePage().props;
+    useEffect(() => {
+        if (flash.message && auth.user.id === stone.user_id && !alertShown) {
+            Swal.fire({
+                title: flash.message,
+                text: `Please paint "lapixgame.com" and the code "${stone.code}" on the back of the stone.`,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            setAlertShown(true);
+        }
+    }, [flash.message, auth.user.id, stone.user_id, stone.code, alertShown]);
 
     const center = [stone.latitude, stone.longitude]
     const zoom = 11;
@@ -47,27 +60,8 @@ function StoneDetails({ stone }) {
             <CardFooter stone={stone} />
             <StoneInfo stone={stone} hasAdminAccess={hasAdminAccess} isOwner={isOwner} />
             <div className="mt-4 ">
-
-
-
                 <Tabs tabs={tabs} activeTab={activeTab} onTabChange={switchTab} />
                 <div className="mt-4">{tabContent[activeTab]}</div>
-
-
-                {/* <Modal show={isDeleteModalOpen} onClose={closeDeleteModal} maxWidth="md">
-                    <div className="p-6">
-                        <h2 className="text-lg font-medium text-gray-900">
-                            Confirm Delete
-                        </h2>
-                        <p className="mt-2 text-sm text-gray-600">
-                            Are you sure you want to delete this stone? This action cannot be undone.
-                        </p>
-                        <div className="mt-4 flex justify-end space-x-2">
-                            <Button buttonType="alternative" onClick={closeDeleteModal}>Cancel</Button>
-                            <Button buttonType="red" onClick={handleConfirmDelete}>Ok</Button>
-                        </div>
-                    </div>
-                </Modal> */}
             </div>
         </main>
     );

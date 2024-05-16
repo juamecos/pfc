@@ -75,7 +75,7 @@ export default function FoundForm({ initialData = {} }) {
     useEffect(() => {
         fetchLocationData();
     }, [fetchLocationData]);
-    console.log('useForm', data);
+
 
     useEffect(() => {
         const validateAndSetData = () => {
@@ -83,7 +83,7 @@ export default function FoundForm({ initialData = {} }) {
 
             // Check that all necessary data is present
             if (!latitude || !longitude || !country || !city) {
-                console.log("Invalid data received, cannot update map location.");
+                console.error("Invalid data received, cannot update map location.");
                 return; // Exit if any data is missing
             }
 
