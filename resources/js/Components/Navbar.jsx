@@ -27,7 +27,7 @@ export default function Navbar() {
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6">
                 <Logo />
                 <div className="w-full md:block md:w-auto" id="navbar-solid-bg">
-                    <ul className="flex hidden text-lg font-medium mt-4 rounded-lg bg-gray-50 md:flex md:flex-row md:mt-0 md:space-x-8 rtl:md:space-x-reverse md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
+                    <ul className="hidden text-lg font-medium mt-4 rounded-lg bg-gray-50 md:flex md:flex-row md:mt-0 md:space-x-8 rtl:md:space-x-reverse md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
                         {navigationLinks.map(({ id, label, href }) => (
                             <li key={id}>
                                 <Link href={href} className={getLinkClass(id)} onClick={() => setActiveLink(id)}>

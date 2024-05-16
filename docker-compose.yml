@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+
+  # PHP Service
+  php:
+    build: './php_docker/'
+    volumes:
+      - ./www/:/var/www/html/
+    networks:
+      - lapisgame-network
+
+  # Apache Service
+  apache:
+    build: './apache_docker/'
+    depends_on:
+      - php
+    ports:
+      - "8081:80"
+      - "443:443"
+    volumes:
+      - ./www/:/var/www/html/
+    networks:
+      - lapisgame-network
+
+  # MariaDB Service
+  mariadb:
+    image: mariadb:10.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - mysqldata:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - lapisgame-network
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8082:80
+    environment:
+      PMA_HOST: ${PMA_HOST}
+    depends_on:
+      - mariadb
+    networks:
+      - lapisgame-network
+
+# Volumes
+volumes:
+  mysqldata:
+
+  #networks
+networks:
+  lapisgame-network:
+    driver: bridge
