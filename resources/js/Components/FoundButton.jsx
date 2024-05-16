@@ -3,13 +3,14 @@ import Modal from './Modal';
 import Swal from 'sweetalert2';
 import Button from './Button';
 import { router } from '@inertiajs/react';
-
+import { usePermissionHandler } from '@/hooks/usePermissionHandler';
 
 export default function FoundButton() {
     const [showModal, setShowModal] = useState(false);
+    const { isLoggedIn } = usePermissionHandler();
 
     const handleOpenModal = () => {
-        setShowModal(true);
+        isLoggedIn() && setShowModal(true);
     };
 
     const handleCloseModal = () => {
@@ -18,17 +19,16 @@ export default function FoundButton() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const formData = new FormData(e.target);  // Use FormData to collect data from the form
         const code = formData.get('code'); // Access the code directly from FormData
-
-        console.log('Submitting code:', code);
 
         try {
             const response = await fetch(route('stone.check', code), {
                 method: 'GET'
             });
             const data = await response.json();
-            console.log('Response data:', data);
+
             if (!response.ok) throw new Error(data.message || 'Stone not found');
 
 

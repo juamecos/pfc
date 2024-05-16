@@ -33,17 +33,48 @@ export function usePermissionHandler() {
         return true;
     };
 
-    const requestGeoPermission = async () => {
-        try {
-            await new Promise((resolve, reject) => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+    const requestGeoPermission = (callback) => {
+        if (navigator.permissions) {
+            navigator.permissions.query({ name: 'geolocation' }).then(function (permissionStatus) {
+                if (permissionStatus.state === 'granted') {
+                    // The user has already granted permission, execute the callback
+                    callback();
+                } else if (permissionStatus.state === 'prompt') {
+                    // The user has not yet given permission, request it
+                    navigator.geolocation.getCurrentPosition(
+                        function () {
+                            // The user granted permission, execute the callback
+                            callback();
+                        },
+                        function () {
+                            // The user denied the permission
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Permission Denied',
+                                text: 'Could not access location. Please allow location access in your browser to use this function.',
+                            });
+                        },
+                        { timeout: 10000 }
+                    );
+                } else if (permissionStatus.state === 'denied') {
+                    // The user denied the permission
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Permission Denied',
+                        text: 'Could not access location. Please allow location access in your browser to use this function.',
+                    });
+                }
             });
-            return true;
-        } catch (error) {
-            Swal.fire('Geolocation Permission Needed', 'This action requires geolocation permissions, which were not granted.', 'error');
-            return false;
+        } else {
+            // The browser does not support the Permissions API
+            Swal.fire({
+                icon: 'error',
+                title: 'Browser Not Supported',
+                text: 'Your browser does not support the Permissions API, so the location permission cannot be checked. This function needs location permission',
+            });
         }
     };
+
 
 
     return { isOwner, hasModeratorRole, isLoggedIn, requestGeoPermission };
