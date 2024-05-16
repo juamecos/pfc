@@ -40,13 +40,14 @@ export default function StoneImageInput({
     useEffect(() => {
         cloudinaryRef.current = window.cloudinary;
         widgetRef.current = cloudinaryRef.current.createUploadWidget({
-            cloudName: 'lapisgame',
-            uploadPreset: 'stones_preset',
-            sources: [
-                'local',
-                'camera',
-                'image_search',
-            ],
+            cloudName,
+            uploadPreset,
+            sources: ['local', 'camera', 'image_search',],
+            resourceType: 'image',
+            multiple: false, // Allow only one image upload
+            maxFiles: 1,     // Maximum of one file
+            showUploadMoreButton: false,
+
 
         }, function (error, result) {
             if (error) {
@@ -82,11 +83,12 @@ export default function StoneImageInput({
                 disabled={disabled}
                 className={`block w-full text-sm text-blue-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none p-4 my-8 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-                <Icon iconName={imageOutline} /> Click here to choose a file or make a picture
+                <Icon iconName={imageOutline} />
+                Click here to choose a file or make a picture
             </button>
 
             {imageUrl && (
-                <div className="flex items-center justify-center bg-gray-200 rounded-md h-36 mt-4">
+                <div className="flex items-center justify-center bg-gray-200 rounded-md h-40 w-52 mt-4">
                     <img
                         src={imageUrl}
                         alt="Uploaded Stone Image"

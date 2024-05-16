@@ -25,6 +25,7 @@ const useCloudinaryUpload = (cloudName = 'lapisgame', uploadPreset = 'stones_pre
                 sources,
                 multiple: false, // Allow only one image upload
                 maxFiles: 1,     // Maximum of one file
+                showUploadMoreButton: false, //Removes upload more button
             },
             (err, result) => {
                 if (err) {
