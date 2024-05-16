@@ -18,7 +18,8 @@ export default function ForgotPassword({ status }) {
     return (
         <GuestLayout>
             <Head title="Forgot Password" />
-            <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full">
+            <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full mb-28">
+                <CustomText h1 bold title='Restore your password' margin="my-8" />
                 <div className="mb-4 text-sm text-gray-600">
                     Forgot your password? No problem. Just let us know your email address and we will email you a password
                     reset link that will allow you to choose a new one.

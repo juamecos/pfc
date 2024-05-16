@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/Forms/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import SecondaryButton from '@/Components/SecondaryButton';
+import CustomText from '@/Components/CustomText';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -14,8 +15,6 @@ export default function Login({ status, canResetPassword }) {
         password: '',
         remember: false,
     });
-
-    console.log(status);
 
     useEffect(() => {
         return () => {
@@ -34,7 +33,8 @@ export default function Login({ status, canResetPassword }) {
             <Head title="Log in" />
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
-            <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full">
+            <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full mb-28">
+                <CustomText h1 bold title='Login' margin="mb-8" />
                 <form onSubmit={submit}>
                     <div>
                         <InputLabel htmlFor="email" value="Email" />

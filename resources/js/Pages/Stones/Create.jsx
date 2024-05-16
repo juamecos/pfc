@@ -15,7 +15,6 @@ export default function StoneCreate() {
                 <ErrorBoundary>
                     <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full">
                         <div className="flex items-center mb-3">
-                            <BackButton />
                             <CustomText h1 title="New Stone" margin='ml-6 mb-6' />
                         </div>
 

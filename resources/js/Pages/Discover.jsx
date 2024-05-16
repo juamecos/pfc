@@ -48,6 +48,9 @@ export default function Discover() {
             <Head title="Discover Stones" />
             <div className="container mx-auto mt-3 bg-white text-center">
                 <h1 className="text-4xl font-bold mb-4">Discover Stones</h1>
+                <p className="text-xl mb-6">
+                    Use the map below to find stones in the world.
+                </p>
                 <div className="relative flex-grow overflow-hidden">
                     <CustomMap
                         center={center}

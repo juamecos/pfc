@@ -5,6 +5,7 @@ import InputLabel from '@/Components/Forms/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/Forms/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
+import CustomText from '@/Components/CustomText';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -29,7 +30,8 @@ export default function Register() {
     return (
         <GuestLayout>
             <Head title="Register" />
-            <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full">
+            <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full mb-28">
+                <CustomText h1 bold title='Register' margin="mb-8" />
                 <form onSubmit={submit}>
                     <div>
                         <InputLabel htmlFor="name" value="Name" />

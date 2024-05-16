@@ -11,7 +11,6 @@ const UsersShow = ({ user }) => {
             <main className="mx-auto mb-[30rem] max-w-[910px] p-4  bg-white">
                 <CustomText h1 title='User Profile' />
                 <UserDetails user={user} />
-
             </main>
         </GuestLayout>
     );

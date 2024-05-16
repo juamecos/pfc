@@ -2,10 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { usePage, router } from "@inertiajs/react";
 import Icon from "./../Icon";
-import verifyAuthAndExecute from "@/lib/verifyAuthAndExecute";
-import inertiaManualVisit from "@/lib/inertiaManualVisit";
 import { heart, heartOutline, chatbubbleOutline, eyeOutline } from 'ionicons/icons';
-import { useTabContext } from '@/context/TabContext';
 import useCardActions from '@/hooks/useCardActions';
 export default function CardFooter({ stone }) {
     const { founds, likes, comments, id } = stone;
@@ -13,6 +10,8 @@ export default function CardFooter({ stone }) {
     const isAuthenticated = !!auth.user;
     const actions = useCardActions(stone, isAuthenticated);
     const userHasLiked = likes && isAuthenticated ? likes.some(like => like.user_id === auth.user.id) : false;
+
+
 
     const icons = {
         found: {

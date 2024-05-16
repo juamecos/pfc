@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FoundController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StoneController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -20,15 +21,23 @@ Route::get('/welcome', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::location('/');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/', [StoneController::class, 'index']);
 
-Route::resource('/stone', StoneController::class);
+Route::get('/stone', [StoneController::class, 'index'])->name('stone.index');
+Route::get('/stone/create', [StoneController::class, 'create'])->name('stone.create');
+Route::post('/stone', [StoneController::class, 'store'])->name('stone.store');
+Route::get('/stone/{stone}', [StoneController::class, 'show'])->name('stone.show');
+Route::get('/stone/{stone}/edit', [StoneController::class, 'edit'])->name('stone.edit');
+Route::put('/stone/{stone}', [StoneController::class, 'update'])->name('stone.update');
+Route::patch('/stone/{stone}', [StoneController::class, 'update'])->name('stone.update');
+Route::delete('/stone/{stone}', [StoneController::class, 'destroy'])->name('stone.destroy');
+Route::get('/stone/create', [StoneController::class, 'create'])->name('stone.create');
+Route::post('/stone', [StoneController::class, 'store'])->name('stone.store');
 Route::get('/stones/{stone}', [StoneController::class, 'show'])->name('stones.show');
 Route::put('stones/{stoneId}', [StoneController::class, 'report'])->name('stone.report');
-
 Route::get('stone/check/{code}', [StoneController::class, 'findStoneByCode'])->name('stone.check');
 
 
@@ -36,6 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::get('/stone/create', [StoneController::class, 'create'])->name('stone.create');
 });
 
 Route::get('/discover', [StoneController::class, 'discover'])->name('stones.discover');
@@ -70,5 +81,7 @@ Route::prefix('users')->group(function () {
     Route::put('{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('{id}', [UserController::class, 'destroy'])->name('users.destroy');
 });
+
+
 
 require __DIR__ . '/auth.php';

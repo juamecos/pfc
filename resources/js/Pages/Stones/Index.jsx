@@ -20,7 +20,7 @@ export default function Stones(props) {
 
                     <CustomText h1 bold title='Lagisgame' textColor="text-white" margin="my-8" />
                     <CustomText h2 title='Explore the world through hidden stones' textColor="text-white" margin="mb-6" />
-                    <Button size="lg" buttonType="red" className="mt-5px-5 py-2 mt-5">Start your search here</Button>
+                    <Button size="lg" href="/discover" buttonType="red" className="mt-5px-5 py-2 mt-5">Start your search here</Button>
                 </div>
             </header>
 

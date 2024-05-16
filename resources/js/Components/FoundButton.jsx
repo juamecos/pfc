@@ -56,8 +56,10 @@ export default function FoundButton() {
         <>
             <div className="absolute top-4 left-[50%] translate-x-[-50%] z-20000">
                 <Button
+                    size="lg"
                     buttonType="red"
                     onClick={handleOpenModal}
+                    className="mt-5px-5 py-2 mt-5"
                 >
                     Found a stone?
                 </Button>

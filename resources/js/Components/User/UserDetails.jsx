@@ -9,11 +9,10 @@ import UserStones from './UserStones';
 
 
 const UserDetails = ({ user }) => {
-    console.log(user.stones);
     const registeredAt = formatDate(user.created_at);
     return (
 
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+        <section className="max-w-4xl mx-auto px-6 py-8 md:py-16 w-full">
             <ProfileHeader user={user} />
             <UserStats user={user} />
             <div className="p-4">
@@ -30,7 +29,7 @@ const UserDetails = ({ user }) => {
             </div>
             <UserStones stones={user.stones} />
 
-        </div>
+        </section>
     );
 };
 
